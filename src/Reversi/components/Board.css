@@ -1,0 +1,141 @@
+.board-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.labels {
+    display: flex;
+    background-color: #1a1a1a;
+}
+
+.top-labels {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.bottom-labels {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.label-corner {
+    width: 30px;
+    height: 30px;
+}
+
+.label {
+    width: 55px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.left-label,
+.right-label {
+    width: 30px;
+    height: 55px;
+    background-color: #1a1a1a;
+}
+
+.board {
+    display: flex;
+    flex-direction: column;
+    background-color: #2e7d32;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.board-row {
+    display: flex;
+}
+
+.cell {
+    width: 55px;
+    height: 55px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: default;
+    position: relative;
+    background-color: #2e7d32;
+}
+
+.cell.valid-move {
+    cursor: pointer;
+}
+
+.cell.valid-move:hover {
+    background-color: #388e3c;
+}
+
+.piece {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease;
+}
+
+.piece.black {
+    background: radial-gradient(circle at 30% 30%, #444, #000);
+    border: 1px solid #111;
+}
+
+.piece.white {
+    background: radial-gradient(circle at 30% 30%, #fff, #ddd);
+    border: 1px solid #ccc;
+}
+
+.hint {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+}
+
+.cell.valid-move:hover .hint {
+    opacity: 0.8;
+}
+
+.black-hint {
+    background-color: #000;
+}
+
+.white-hint {
+    background-color: #fff;
+    border: 1px solid #ccc;
+}
+
+@media (max-width: 600px) {
+    .cell {
+        width: 40px;
+        height: 40px;
+    }
+
+    .piece {
+        width: 32px;
+        height: 32px;
+    }
+
+    .label {
+        width: 40px;
+        height: 25px;
+        font-size: 0.9rem;
+    }
+
+    .label-corner {
+        width: 25px;
+        height: 25px;
+    }
+
+    .left-label,
+    .right-label {
+        width: 25px;
+        height: 40px;
+    }
+}
