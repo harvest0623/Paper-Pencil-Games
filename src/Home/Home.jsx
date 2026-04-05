@@ -413,14 +413,14 @@ const MinesweeperBoard = () => (
 const games = [
     {
         id: 'tictactoe',
-        name: '经典井字棋',
+        name: '井字棋',
         description: '经典的游戏，两名玩家轮流在3x3的网格中标记X或O，目标是连续三个相同符号。',
         board: <TicTacToeBoard />,
         color: '#4a90d9'
     },
     {
         id: 'super-tictactoe',
-        name: '超级井字棋',
+        name: '超级井字棋(九井棋)',
         description: '经典游戏的更复杂版本，玩法是在一个大3x3网格上，其中包含多个小3x3网格。',
         board: <SuperTicTacToeBoard />,
         color: '#7c3aed'
@@ -500,7 +500,7 @@ function Home() {
                     {games.map((game) => (
                         <Link
                             key={game.id}
-                            to={game.id === 'reversi' ? '/home/reversi' : '#'}
+                            to={game.id === 'reversi' ? '/home/reversi' : game.id === 'tictactoe' ? '/home/tic-tac-toe' : '#'}
                             className="game-card-link"
                         >
                             <div

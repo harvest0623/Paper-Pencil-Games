@@ -219,6 +219,26 @@ body {
     background: radial-gradient(circle at 30% 30%, #fff, #ddd);
 }
 
+.x-piece {
+    background: #e3f2fd;
+    color: #1976d2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.o-piece {
+    background: #ffebee;
+    color: #c62828;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
 .score-label {
     font-size: 0.9rem;
     color: #8892b0;

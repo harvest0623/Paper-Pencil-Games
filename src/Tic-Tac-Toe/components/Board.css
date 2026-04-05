@@ -1,0 +1,130 @@
+.board-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.labels {
+    display: flex;
+    width: 300px;
+    height: 30px;
+}
+
+.label-corner {
+    width: 30px;
+    height: 30px;
+}
+
+.label {
+    width: 100px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.board {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid #333;
+    border-radius: 4px;
+}
+
+.board-row {
+    display: flex;
+}
+
+.cell {
+    width: 100px;
+    height: 100px;
+    border: 1px solid #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    background-color: #f0f0f0;
+}
+
+.cell:hover {
+    background-color: #e0e0e0;
+}
+
+.valid-move:hover {
+    background-color: #d0f0d0;
+}
+
+.piece {
+    font-size: 48px;
+    font-weight: bold;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    text-align: center;
+}
+
+.piece.x {
+    color: #1976d2;
+    background-color: #e3f2fd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.piece.o {
+    color: #c62828;
+    background-color: #ffebee;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.hint {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.x-hint {
+    background-color: rgba(52, 152, 219, 0.3);
+}
+
+.o-hint {
+    background-color: rgba(231, 76, 60, 0.3);
+}
+
+.left-label, .right-label {
+    width: 30px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    background-color: #f8f9fa;
+}
+
+.left-label {
+    border-right: 1px solid #333;
+}
+
+.right-label {
+    border-left: 1px solid #333;
+}
+
+.top-labels, .bottom-labels {
+    background-color: #f8f9fa;
+    border: 1px solid #333;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+}
+
+.bottom-labels {
+    border-top: none;
+    border-bottom: 1px solid #333;
+    border-radius: 0 0 4px 4px;
+}
