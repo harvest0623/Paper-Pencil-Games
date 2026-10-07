@@ -4,6 +4,39 @@ const EMPTY = 0;
 const X = 1;
 const O = 2;
 
+const COLUMN_LABELS = ['A', 'B', 'C'];
+
+/* 行列转坐标标签，例如 A1 */
+function coordLabel(row, col) {
+    return `${COLUMN_LABELS[col]}${row + 1}`;
+}
+
+/* 返回获胜的三个格子，若无则返回空数组 */
+const LINES = [
+    [0, 0, 0, 1, 0, 2],
+    [1, 0, 1, 1, 1, 2],
+    [2, 0, 2, 1, 2, 2],
+    [0, 0, 1, 0, 2, 0],
+    [0, 1, 1, 1, 2, 1],
+    [0, 2, 1, 2, 2, 2],
+    [0, 0, 1, 1, 2, 2],
+    [0, 2, 1, 1, 2, 0]
+];
+
+function getWinningCells(board) {
+    for (const [r1, c1, r2, c2, r3, c3] of LINES) {
+        const value = board[r1][c1];
+        if (value !== EMPTY && value === board[r2][c2] && value === board[r3][c3]) {
+            return [
+                { row: r1, col: c1 },
+                { row: r2, col: c2 },
+                { row: r3, col: c3 }
+            ];
+        }
+    }
+    return [];
+}
+
 function createInitialBoard() {
     return Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(EMPTY));
 }
@@ -82,6 +115,9 @@ export {
     EMPTY,
     X,
     O,
+    COLUMN_LABELS,
+    coordLabel,
+    getWinningCells,
     createInitialBoard,
     getValidMoves,
     makeMove,

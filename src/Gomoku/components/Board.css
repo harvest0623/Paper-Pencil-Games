@@ -1,0 +1,284 @@
+/* ============================================================
+   五子棋棋盘（交叉点落子）
+   ============================================================ */
+
+.gm-board-wrap {
+    --bd: var(--board, min(620px, calc(100vw - 150px)));
+    --cell: calc(var(--bd) / 15);
+    --coord: 26px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    user-select: none;
+}
+
+/* ---------------- 坐标 ---------------- */
+.gm-coords {
+    display: grid;
+    color: var(--text-3);
+    font-size: 0.76rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+.gm-coords--top,
+.gm-coords--bottom {
+    width: calc(var(--bd) + 2 * var(--coord));
+    grid-template-columns: var(--coord) repeat(15, calc(var(--bd) / 15)) var(--coord);
+}
+
+.gm-coords--top {
+    margin-bottom: 8px;
+}
+
+.gm-coords--bottom {
+    margin-top: 8px;
+}
+
+.gm-coord {
+    display: grid;
+    place-items: center;
+    height: var(--coord);
+}
+
+.gm-corner {
+    display: block;
+}
+
+.gm-board-mid {
+    display: flex;
+    align-items: flex-start;
+}
+
+.gm-coords--side {
+    width: var(--coord);
+    height: var(--bd);
+    grid-template-rows: repeat(15, calc(var(--bd) / 15));
+}
+
+/* ---------------- 棋盘本体 ---------------- */
+.gm-board {
+    position: relative;
+    width: var(--bd);
+    height: var(--bd);
+    border-radius: 14px;
+    background-color: #d7ad6c;
+    background-image:
+        radial-gradient(120% 120% at 50% -10%, rgba(255, 255, 255, 0.32), transparent 62%),
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px),
+        linear-gradient(158deg, #e9cd97 0%, #d8b071 52%, #bd934f 100%);
+    background-size:
+        100% 100%,
+        var(--cell) var(--cell),
+        var(--cell) var(--cell),
+        100% 100%;
+    background-position:
+        0 0,
+        calc(var(--cell) / 2) calc(var(--cell) / 2),
+        calc(var(--cell) / 2) calc(var(--cell) / 2),
+        0 0;
+    --line: rgba(74, 48, 16, 0.5);
+    box-shadow:
+        0 0 0 6px rgba(255, 255, 255, 0.045),
+        0 0 0 7px rgba(255, 255, 255, 0.1),
+        0 24px 60px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5),
+        inset 0 -40px 70px rgba(122, 82, 24, 0.22);
+    overflow: hidden;
+}
+
+/* 星位 */
+.gm-star {
+    position: absolute;
+    z-index: 0;
+    width: 7px;
+    height: 7px;
+    margin: -3.5px 0 0 -3.5px;
+    border-radius: 50%;
+    background: rgba(58, 36, 8, 0.88);
+    pointer-events: none;
+}
+
+/* ---------------- 交叉点 ---------------- */
+.gm-points {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(15, 1fr);
+    grid-template-rows: repeat(15, 1fr);
+}
+
+.gm-point {
+    position: relative;
+    display: grid;
+    place-items: center;
+}
+
+.gm-point.is-clickable {
+    cursor: pointer;
+}
+
+/* 悬停虚影 */
+.gm-ghost {
+    width: 82%;
+    height: 82%;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.16s ease;
+}
+
+.gm-point.is-clickable:hover .gm-ghost {
+    opacity: 0.85;
+}
+
+.gm-ghost.is-black {
+    background: radial-gradient(circle at 32% 28%, #6a7386, #101319);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+}
+
+.gm-ghost.is-white {
+    background: radial-gradient(circle at 32% 28%, #ffffff, #cfd6e2);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* ---------------- 棋子 ---------------- */
+.gm-stone {
+    position: relative;
+    width: 80%;
+    height: 80%;
+    border-radius: 50%;
+    animation: gm-place 0.26s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.gm-stone::after {
+    content: '';
+    position: absolute;
+    top: 16%;
+    left: 21%;
+    width: 32%;
+    height: 22%;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.6);
+    filter: blur(2px);
+    opacity: 0.7;
+}
+
+.gm-stone.is-black {
+    background: radial-gradient(circle at 32% 28%, #6a7386 0%, #23262f 55%, #05060a 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+        inset -3px -4px 9px rgba(0, 0, 0, 0.8),
+        inset 3px 3px 7px rgba(255, 255, 255, 0.16),
+        0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.gm-stone.is-black::after {
+    opacity: 0.32;
+}
+
+.gm-stone.is-white {
+    background: radial-gradient(circle at 32% 28%, #ffffff 0%, #eef1f7 52%, #c3cad8 100%);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow:
+        inset -3px -4px 10px rgba(122, 133, 152, 0.5),
+        inset 3px 3px 8px rgba(255, 255, 255, 0.95),
+        0 4px 10px rgba(0, 0, 0, 0.35);
+}
+
+/* 最后一手 */
+.gm-stone.is-last::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 2px solid rgba(245, 196, 81, 0.95);
+    box-shadow: 0 0 12px rgba(245, 196, 81, 0.65);
+    animation: gm-last 0.4s ease;
+}
+
+/* 连成五子 */
+.gm-stone.is-win::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid #22d3ee;
+    box-shadow: 0 0 16px rgba(34, 211, 238, 0.85);
+    animation: gm-win 1.1s ease-in-out infinite;
+}
+
+/* 推荐落点（提示） */
+.gm-hint-ring {
+    position: absolute;
+    inset: 6%;
+    border-radius: 50%;
+    border: 2px dashed rgba(245, 196, 81, 0.95);
+    box-shadow: 0 0 16px rgba(245, 196, 81, 0.5);
+    animation: gm-ring 1.3s ease-in-out infinite;
+    pointer-events: none;
+}
+
+/* ---------------- 动画 ---------------- */
+@keyframes gm-place {
+    0% {
+        transform: scale(0.3);
+        opacity: 0;
+    }
+    60% {
+        transform: scale(1.12);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes gm-last {
+    0% {
+        opacity: 0;
+        transform: scale(1.5);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes gm-win {
+    0%,
+    100% {
+        opacity: 0.65;
+        transform: scale(0.94);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.06);
+    }
+}
+
+@keyframes gm-ring {
+    0%,
+    100% {
+        transform: scale(0.9);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.02);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 760px) {
+    .gm-board-wrap {
+        --coord: 18px;
+    }
+    .gm-coords {
+        font-size: 0.68rem;
+    }
+    .gm-board {
+        border-radius: 12px;
+    }
+}

@@ -1,141 +1,274 @@
-.board-wrapper {
+/* ============================================================
+   黑白棋棋盘
+   ============================================================ */
+
+.rv-board-wrap {
+    --board: min(520px, calc(100vw - 160px));
+    --coord: 30px;
     display: flex;
     flex-direction: column;
-}
-
-.labels {
-    display: flex;
-    background-color: #1a1a1a;
-}
-
-.top-labels {
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-}
-
-.bottom-labels {
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-}
-
-.label-corner {
-    width: 30px;
-    height: 30px;
-}
-
-.label {
-    width: 55px;
-    height: 30px;
-    display: flex;
     align-items: center;
-    justify-content: center;
-    color: #fff;
+    user-select: none;
+}
+
+/* 坐标 */
+.rv-coords {
+    display: grid;
+    color: var(--text-3);
+    font-size: 0.78rem;
     font-weight: 600;
-    font-size: 1.1rem;
+    letter-spacing: 0.04em;
 }
 
-.left-label,
-.right-label {
-    width: 30px;
-    height: 55px;
-    background-color: #1a1a1a;
+.rv-coords--top,
+.rv-coords--bottom {
+    width: calc(var(--board) + 2 * var(--coord));
+    grid-template-columns: var(--coord) repeat(8, calc(var(--board) / 8)) var(--coord);
 }
 
-.board {
+.rv-coords--top {
+    margin-bottom: 8px;
+}
+
+.rv-coords--bottom {
+    margin-top: 8px;
+}
+
+.rv-coord {
+    display: grid;
+    place-items: center;
+    height: var(--coord);
+}
+
+.rv-corner {
+    display: block;
+}
+
+.rv-board-mid {
+    display: flex;
+    align-items: flex-start;
+}
+
+.rv-coords--side {
+    width: var(--coord);
+    height: var(--board);
+    grid-template-rows: repeat(8, calc(var(--board) / 8));
+}
+
+/* 棋盘本体 */
+.rv-board {
+    width: var(--board);
+    height: var(--board);
+    border-radius: 16px;
+    background: linear-gradient(158deg, var(--felt-1) 0%, var(--felt-2) 100%);
+    box-shadow:
+        0 0 0 6px rgba(255, 255, 255, 0.045),
+        0 0 0 7px rgba(255, 255, 255, 0.1),
+        0 24px 60px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.16),
+        inset 0 -30px 60px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+}
+
+.rv-board__grid {
     display: flex;
     flex-direction: column;
-    background-color: #2e7d32;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    height: 100%;
 }
 
-.board-row {
+.rv-row {
+    flex: 1;
     display: flex;
 }
 
-.cell {
-    width: 55px;
-    height: 55px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: default;
+.rv-cell {
+    flex: 1;
     position: relative;
-    background-color: #2e7d32;
+    display: grid;
+    place-items: center;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.075);
+    perspective: 620px;
 }
 
-.cell.valid-move {
+.rv-cell.is-valid {
     cursor: pointer;
 }
 
-.cell.valid-move:hover {
-    background-color: #388e3c;
+.rv-cell.is-valid::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.07);
+    opacity: 0;
+    transition: opacity 0.16s ease;
 }
 
-.piece {
-    width: 45px;
-    height: 45px;
+.rv-cell.is-valid:hover::after {
+    opacity: 1;
+}
+
+/* 棋子 */
+.rv-piece {
+    position: relative;
+    width: 82%;
+    height: 82%;
     border-radius: 50%;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    transition: transform 0.2s ease;
+    animation: rv-place 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.piece.black {
-    background: radial-gradient(circle at 30% 30%, #444, #000);
-    border: 1px solid #111;
-}
-
-.piece.white {
-    background: radial-gradient(circle at 30% 30%, #fff, #ddd);
-    border: 1px solid #ccc;
-}
-
-.hint {
-    width: 20px;
-    height: 20px;
+.rv-piece::after {
+    content: '';
+    position: absolute;
+    top: 15%;
+    left: 20%;
+    width: 34%;
+    height: 24%;
     border-radius: 50%;
-    opacity: 0.5;
-    transition: opacity 0.2s ease;
+    background: rgba(255, 255, 255, 0.55);
+    filter: blur(2px);
+    opacity: 0.75;
 }
 
-.cell.valid-move:hover .hint {
-    opacity: 0.8;
+.rv-piece.is-black {
+    background: radial-gradient(circle at 32% 28%, #545b6b 0%, #191c24 56%, #05060a 100%);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    box-shadow:
+        inset -3px -4px 9px rgba(0, 0, 0, 0.8),
+        inset 3px 3px 7px rgba(255, 255, 255, 0.12),
+        0 5px 12px rgba(0, 0, 0, 0.6);
 }
 
-.black-hint {
-    background-color: #000;
+.rv-piece.is-black::after {
+    opacity: 0.35;
 }
 
-.white-hint {
-    background-color: #fff;
-    border: 1px solid #ccc;
+.rv-piece.is-white {
+    background: radial-gradient(circle at 32% 28%, #ffffff 0%, #eef1f7 52%, #c5ccd9 100%);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow:
+        inset -3px -4px 10px rgba(122, 133, 152, 0.55),
+        inset 3px 3px 8px rgba(255, 255, 255, 0.95),
+        0 5px 12px rgba(0, 0, 0, 0.42);
 }
 
-@media (max-width: 600px) {
-    .cell {
-        width: 40px;
-        height: 40px;
-    }
+/* 最后一手标记 */
+.rv-piece.is-last::before {
+    content: '';
+    position: absolute;
+    inset: -7px;
+    border-radius: 50%;
+    border: 2px solid rgba(245, 196, 81, 0.95);
+    box-shadow: 0 0 14px rgba(245, 196, 81, 0.65);
+    animation: rv-last-pop 0.45s ease;
+}
 
-    .piece {
-        width: 32px;
-        height: 32px;
+/* 落子动画 */
+@keyframes rv-place {
+    0% {
+        transform: scale(0.3);
+        opacity: 0;
     }
-
-    .label {
-        width: 40px;
-        height: 25px;
-        font-size: 0.9rem;
+    60% {
+        transform: scale(1.12);
+        opacity: 1;
     }
-
-    .label-corner {
-        width: 25px;
-        height: 25px;
+    100% {
+        transform: scale(1);
+        opacity: 1;
     }
+}
 
-    .left-label,
-    .right-label {
-        width: 25px;
-        height: 40px;
+/* 翻转动画 */
+.rv-piece.is-flipping {
+    animation: rv-flip 0.46s cubic-bezier(0.42, 0.05, 0.2, 1);
+}
+
+@keyframes rv-flip {
+    0% {
+        transform: rotateY(0deg);
+    }
+    50% {
+        transform: rotateY(90deg) scale(1.07);
+    }
+    100% {
+        transform: rotateY(0deg) scale(1);
+    }
+}
+
+@keyframes rv-last-pop {
+    0% {
+        opacity: 0;
+        transform: scale(1.5);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 可落子提示 */
+.rv-hint {
+    width: 32%;
+    height: 32%;
+    border-radius: 50%;
+    animation: rv-pulse 1.7s ease-in-out infinite;
+}
+
+.rv-hint.is-black {
+    background: radial-gradient(circle at 30% 30%, #7a8296, #101218);
+    box-shadow: 0 0 12px rgba(10, 12, 18, 0.7);
+}
+
+.rv-hint.is-white {
+    background: radial-gradient(circle at 30% 30%, #ffffff, #cdd5e2);
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
+}
+
+@keyframes rv-pulse {
+    0%,
+    100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1.18);
+        opacity: 1;
+    }
+}
+
+/* 推荐落点（提示功能） */
+.rv-hint-ring {
+    position: absolute;
+    inset: 5%;
+    border-radius: 50%;
+    border: 2px dashed rgba(245, 196, 81, 0.95);
+    box-shadow: 0 0 16px rgba(245, 196, 81, 0.5);
+    animation: rv-ring 1.3s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes rv-ring {
+    0%,
+    100% {
+        transform: scale(0.9);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.02);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 760px) {
+    .rv-board-wrap {
+        --board: min(520px, calc(100vw - 140px));
+        --coord: 22px;
+    }
+    .rv-coords {
+        font-size: 0.68rem;
+    }
+    .rv-board {
+        border-radius: 12px;
     }
 }

@@ -1,0 +1,50 @@
+/* ============================================================
+   井字棋页面
+   ============================================================ */
+
+.tt-page {
+    min-height: 100vh;
+}
+
+/* 棋盘尺寸跟随视口，避免窄屏溢出 */
+.tt-page {
+    --board: min(430px, calc(100vw - 190px));
+}
+
+.tt-page .gp-turnbar,
+.tt-page .gp-boardstats {
+    max-width: var(--board);
+}
+
+.tt-page .gp-stage__hint {
+    max-width: calc(var(--board) + 60px);
+}
+
+/* 先手说明 */
+.tt-first-note {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--text-3);
+}
+
+/* 棋谱中的制胜标记 */
+.tt-log__tag {
+    margin-left: auto;
+    padding: 2px 9px;
+    border-radius: var(--r-full);
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: #ffdf9a;
+    background: rgba(245, 196, 81, 0.16);
+    border: 1px solid rgba(245, 196, 81, 0.34);
+}
+
+@media (max-width: 760px) {
+    .tt-page {
+        --board: min(430px, calc(100vw - 150px));
+    }
+    .tt-page .gp-stage__hint {
+        max-width: 100%;
+    }
+}

@@ -7,18 +7,22 @@ import GameNav from '../components/GameNav';
 import BackBar from '../components/BackBar';
 import MoreGames from '../components/MoreGames';
 import {
-    createInitialBoard,
-    makeMove,
-    getValidMoves,
-    getWinningCells,
+    createEmptyBoard,
+    placeStone,
+    checkWin,
+    isBoardFull,
+    countStones,
+    otherPlayer,
     coordLabel,
-    X,
-    O
+    BOARD_SIZE,
+    EMPTY,
+    BLACK,
+    WHITE
 } from './utils/gameLogic';
 import { getAIMove } from './utils/ai';
 import { sound } from '../utils/sound';
 import '../styles/game-page.css';
-import './TicTacToe.css';
+import './Gomoku.css';
 
 /* ---------------- 本地持久化 ---------------- */
 const safeGet = (key, fallback) => {
@@ -42,8 +46,6 @@ const safeSet = (key, value) => {
 const formatTime = (seconds) =>
     `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
 
-const otherPlayer = (player) => (player === X ? O : X);
-
 const DIFFICULTY_OPTIONS = [
     { id: 'easy', label: '简单' },
     { id: 'medium', label: '中等' },
@@ -52,12 +54,12 @@ const DIFFICULTY_OPTIONS = [
 
 const FAQ_ITEMS = [
     {
-        q: '井字棋是先手必胜吗？',
-        a: '在双方都走最优的情况下，井字棋必然以平局收场，先手无法强制取胜。但只要对手出现一步失误，先手就能立刻抓住机会连成一线。'
+        q: '五子棋的开局规则是什么？',
+        a: '标准五子棋由执黑一方先行，双方轮流在交叉点落子。任意一方率先在横、竖、斜任一方向连成五子（含五子以上）即获胜。'
     },
     {
         q: '可以让电脑先手吗？',
-        a: '可以。在「对局设置」中把先手切换为「电脑先手」，重新开局后由电脑执 X 先行。'
+        a: '可以。在「对局设置」中把先手切换为「电脑先手」，重新开局后由电脑执黑先行。'
     },
     {
         q: '怎样修改玩家名字？',
@@ -68,58 +70,58 @@ const FAQ_ITEMS = [
         a: '可以。点击「悔棋」即回退，人机模式会自动回到你的上一次落子前，双人模式则回退一步。'
     },
     {
-        q: '金色虚线的方框是什么？',
+        q: '棋盘上的金色虚线圈是什么？',
         a: '那是你点击「提示」后，引擎为你计算出的当前最优落点，仅作参考，不影响对局。'
     },
     {
-        q: '怎样才算获胜？',
-        a: '横、竖或斜线方向率先连成三个自己的标记即获胜；若九格填满仍无人连成一线，则本局平局。'
+        q: '连成五子后棋盘会有什么变化？',
+        a: '获胜的五颗棋子会被高亮标出，并弹出结算面板显示胜负结果与双方棋子数。'
     }
 ];
 
 const RULES = [
     {
         step: '01',
-        title: '九格棋盘',
-        desc: '棋盘是 3×3 的九宫格，双方各执一种标记，轮流在空格中落子，落子后不可移动。'
+        title: '黑先白后',
+        desc: '棋盘为 15×15 的交叉点，执黑一方先行，双方轮流落下一子，落子后不可移动。'
     },
     {
         step: '02',
-        title: 'X 先 O 后',
-        desc: '执 X 的一方先行，之后双方交替出手。每回合只能落一子，落在任意空白格中。'
+        title: '连五取胜',
+        desc: '横、竖、斜任意方向连成五颗同色棋子即获胜，连成五颗以上同样算赢。'
     },
     {
         step: '03',
-        title: '连成一线',
-        desc: '横、竖、斜任意方向率先连成三个自己的标记即获胜，最多九手就能分出胜负。'
+        title: '攻守兼备',
+        desc: '既要构筑自己的连线，也要随时封堵对手的「活三」「冲四」，一步之差常常决定成败。'
     },
     {
         step: '04',
-        title: '满格平局',
-        desc: '如果九格被填满仍未出现三连，本局以平局收场——这也是最优对抗下的常见结果。'
+        title: '满盘和棋',
+        desc: '若棋盘下满仍无一方连成五子，则本局以平局收场。'
     }
 ];
 
 const TIPS = [
-    { title: '抢占中心', desc: '中心格同时属于四条连线，是第一优先级的落点，先拿到它就能掌握主动。' },
-    { title: '先占角位', desc: '角格处在三条连线上，价值仅次于中心；中心被占时，优先抢角而不是边。' },
-    { title: '及时封堵', desc: '对手已有两子连线时必须立刻堵住第三格，否则下一手就会被直接连成。' },
-    { title: '制造双杀', desc: '一子同时形成两条「差一格」的线路，对手只能堵住一条，另一条就是制胜点。' },
-    { title: '别只顾防守', desc: '每次落子前先看自己能否直接取胜，再考虑是否需要封堵，进攻往往比防守更省手。' },
-    { title: '逼对手走边', desc: '把对手赶到边格，边格只属于两条连线，其威胁范围最小，更利于你掌控局面。' }
+    { title: '抢占天元', desc: '开局落在棋盘中心附近，能向四面八方延伸，获得最多的进攻角度。' },
+    { title: '活三必应', desc: '对手形成「活三」时必须及时封堵，否则下一手就会变成无法阻挡的活四。' },
+    { title: '制造双三', desc: '一子同时形成两个活三，对手只能堵住一个，这是最常见的取胜手筋。' },
+    { title: '冲四逼应', desc: '用「冲四」逼迫对手被动防守，从而为自己争取到关键的进攻节奏。' },
+    { title: '紧贴缠斗', desc: '落子尽量靠近对手棋形，压缩其发展空间，同时在纠缠中寻找机会。' },
+    { title: '留有余地', desc: '不要过早走成死形，保持多条线路的可能性，让对手难以兼顾。' }
 ];
 
 const FEATURES = [
-    { title: '三档智能引擎', desc: '简单档随机出手，中等档会攻守兼顾，困难档使用极小化极大搜索，几乎不会失误。' },
-    { title: '双人同屏对战', desc: '无需登录，和朋友在同一台设备上轮流落子，随时复盘每一手。' },
-    { title: '站内提示引擎', desc: '卡住时一键获取引擎推荐的最优落点，边下边体会连线与双杀的手筋。' },
+    { title: '三档智能引擎', desc: '基于棋型评分的引擎，简单档轻松上手，困难档会预判你的反击路线。' },
+    { title: '双人同屏对战', desc: '无需登录，和朋友在同一台设备上轮流落子，随时复盘。' },
+    { title: '站内提示引擎', desc: '卡住时一键获取引擎推荐的落点，边下边体会棋型与先手的重要性。' },
     { title: '悔棋与棋谱', desc: '支持逐步悔棋，完整记录每一手坐标，制胜一手会被特别标注。' },
     { title: '胜负战绩统计', desc: '自动记录对人机的胜、负、平与胜率，见证你的进步曲线。' },
     { title: '全设备自适应', desc: '手机、平板、桌面端均可清爽开玩，支持触屏与鼠标操作。' }
 ];
 
 const INITIAL_STATE = (firstPlayer) => ({
-    board: createInitialBoard(),
+    board: createEmptyBoard(),
     currentPlayer: firstPlayer,
     lastMove: null,
     winCells: [],
@@ -127,11 +129,11 @@ const INITIAL_STATE = (firstPlayer) => ({
     log: []
 });
 
-function TicTacToeGame() {
+function GomokuGame() {
     const [mode, setMode] = useState('ai'); // ai | pvp
     const [difficulty, setDifficulty] = useState('medium');
     const [computerFirst, setComputerFirst] = useState(false);
-    const [timeline, setTimeline] = useState(() => [INITIAL_STATE(X)]);
+    const [timeline, setTimeline] = useState(() => [INITIAL_STATE(BLACK)]);
     const [phase, setPhase] = useState('playing'); // playing | over
     const [toast, setToast] = useState('');
     const [thinking, setThinking] = useState(false);
@@ -140,12 +142,12 @@ function TicTacToeGame() {
     const [elapsed, setElapsed] = useState(0);
 
     const [names, setNames] = useState(() =>
-        safeGet('tt.names', { x: '玩家', o: '玩家 2' })
+        safeGet('gm.names', { black: '玩家', white: '玩家 2' })
     );
     const [record, setRecord] = useState(() =>
-        safeGet('tt.record', { win: 0, loss: 0, draw: 0 })
+        safeGet('gm.record', { win: 0, loss: 0, draw: 0 })
     );
-    const [soundOn, setSoundOn] = useState(() => safeGet('tt.sound', true));
+    const [soundOn, setSoundOn] = useState(() => safeGet('gm.sound', true));
 
     const toastTimer = useRef(null);
     const recordedRef = useRef(false);
@@ -153,27 +155,17 @@ function TicTacToeGame() {
     const state = timeline[timeline.length - 1];
     const { board, currentPlayer, lastMove, winCells, winner, log } = state;
 
-    const marks = useMemo(() => {
-        let x = 0;
-        let o = 0;
-        board.forEach((row) =>
-            row.forEach((cell) => {
-                if (cell === X) x += 1;
-                else if (cell === O) o += 1;
-            })
-        );
-        return { x, o };
-    }, [board]);
+    const stones = useMemo(() => countStones(board), [board]);
 
-    const aiPlayer = computerFirst ? X : O;
-    const humanPlayer = computerFirst ? O : X;
+    const aiPlayer = computerFirst ? BLACK : WHITE;
+    const humanPlayer = computerFirst ? WHITE : BLACK;
 
-    const xName = mode === 'ai' && aiPlayer === X ? '电脑' : names.x;
-    const oName = mode === 'ai' && aiPlayer === O ? '电脑' : names.o;
+    const blackName = mode === 'ai' && aiPlayer === BLACK ? '电脑' : names.black;
+    const whiteName = mode === 'ai' && aiPlayer === WHITE ? '电脑' : names.white;
 
     const playerName = useCallback(
-        (player) => (player === X ? xName : oName),
-        [xName, oName]
+        (player) => (player === BLACK ? blackName : whiteName),
+        [blackName, whiteName]
     );
 
     const isHumanTurn =
@@ -181,9 +173,9 @@ function TicTacToeGame() {
         (mode === 'pvp' || currentPlayer === humanPlayer) &&
         !thinking;
 
-    useEffect(() => safeSet('tt.names', names), [names]);
-    useEffect(() => safeSet('tt.record', record), [record]);
-    useEffect(() => safeSet('tt.sound', soundOn), [soundOn]);
+    useEffect(() => safeSet('gm.names', names), [names]);
+    useEffect(() => safeSet('gm.record', record), [record]);
+    useEffect(() => safeSet('gm.sound', soundOn), [soundOn]);
     useEffect(() => sound.setEnabled(soundOn), [soundOn]);
 
     /* 对局计时 */
@@ -201,7 +193,7 @@ function TicTacToeGame() {
 
     const resetGame = useCallback(() => {
         recordedRef.current = false;
-        setTimeline([INITIAL_STATE(X)]);
+        setTimeline([INITIAL_STATE(BLACK)]);
         setPhase('playing');
         setToast('');
         setHint(null);
@@ -215,20 +207,19 @@ function TicTacToeGame() {
             const cur = timeline[timeline.length - 1];
             const player = cur.currentPlayer;
             if (!player) return;
+            if (cur.board[row][col] !== EMPTY) return;
 
-            const newBoard = makeMove(cur.board, row, col, player);
-            if (!newBoard) return;
-
-            const winningCells = getWinningCells(newBoard);
-            const full = getValidMoves(newBoard).length === 0;
-            const finished = winningCells.length > 0 || full;
+            const newBoard = placeStone(cur.board, row, col, player);
+            const winningLine = checkWin(newBoard, row, col);
+            const full = isBoardFull(newBoard);
+            const finished = Boolean(winningLine) || full;
 
             const nextState = {
                 board: newBoard,
                 currentPlayer: finished ? null : otherPlayer(player),
                 lastMove: { row, col, player },
-                winCells: winningCells,
-                winner: winningCells.length > 0 ? player : null,
+                winCells: winningLine || [],
+                winner: winningLine ? player : null,
                 log: [
                     ...cur.log,
                     {
@@ -236,7 +227,7 @@ function TicTacToeGame() {
                         row,
                         col,
                         label: coordLabel(row, col),
-                        winning: winningCells.length > 0
+                        winning: Boolean(winningLine)
                     }
                 ]
             };
@@ -260,7 +251,7 @@ function TicTacToeGame() {
             const move = getAIMove(board, aiPlayer, difficulty);
             setThinking(false);
             if (move) applyMove(move.row, move.col);
-        }, 520);
+        }, 560);
 
         return () => {
             clearTimeout(timer);
@@ -271,13 +262,13 @@ function TicTacToeGame() {
     /* 结算 */
     const result = useMemo(() => {
         if (phase !== 'over') return null;
-        const scores = { black: marks.x, white: marks.o };
+        const scores = { black: stones.black, white: stones.white };
 
         if (!winner) {
             return {
                 tone: 'draw',
                 title: '平局',
-                sub: '九格已经填满，双方都没能连成一线。',
+                sub: '棋盘已经下满，双方都没能连成五子。',
                 scores
             };
         }
@@ -288,8 +279,8 @@ function TicTacToeGame() {
                 tone: humanWon ? 'win' : 'lose',
                 title: humanWon ? '你赢了！' : '电脑获胜',
                 sub: humanWon
-                    ? '你率先连成一线，拿下本局，干得漂亮。'
-                    : '电脑率先连成一线，换个思路再来一局吧。',
+                    ? '你率先连成五子，拿下本局，干得漂亮。'
+                    : '电脑率先连成五子，调整策略再来一局吧。',
                 scores
             };
         }
@@ -297,10 +288,10 @@ function TicTacToeGame() {
         return {
             tone: 'win',
             title: `${playerName(winner)} 获胜`,
-            sub: `${playerName(winner)} 率先连成三子，赢得本局。`,
+            sub: `${playerName(winner)} 率先连成五子，赢得本局。`,
             scores
         };
-    }, [phase, winner, marks, mode, humanPlayer, playerName]);
+    }, [phase, winner, stones, mode, humanPlayer, playerName]);
 
     useEffect(() => {
         if (phase !== 'over' || recordedRef.current) return;
@@ -341,16 +332,15 @@ function TicTacToeGame() {
         const move = getAIMove(board, currentPlayer, 'hard');
         if (move) {
             setHint(move);
-            showToast('已为你标出推荐落点');
             sound.click();
         }
-    }, [isHumanTurn, board, currentPlayer, showToast]);
+    }, [isHumanTurn, board, currentPlayer]);
 
     const handleModeChange = (nextMode) => {
         if (nextMode === mode) return;
         setMode(nextMode);
         recordedRef.current = false;
-        setTimeline([INITIAL_STATE(X)]);
+        setTimeline([INITIAL_STATE(BLACK)]);
         setPhase('playing');
         setHint(null);
         setShowResult(false);
@@ -363,7 +353,7 @@ function TicTacToeGame() {
         if (value === computerFirst) return;
         setComputerFirst(value);
         recordedRef.current = false;
-        setTimeline([INITIAL_STATE(X)]);
+        setTimeline([INITIAL_STATE(BLACK)]);
         setPhase('playing');
         setHint(null);
         setShowResult(false);
@@ -373,61 +363,64 @@ function TicTacToeGame() {
 
     const totalGames = record.win + record.loss + record.draw;
     const winRate = totalGames ? Math.round((record.win / totalGames) * 100) : 0;
-    const emptyCount = 9 - marks.x - marks.o;
+    const emptyCount = BOARD_SIZE * BOARD_SIZE - stones.black - stones.white;
 
     /* 对局仪表盘数据 */
-    const placed = marks.x + marks.o;
-    const xPct = placed ? (marks.x / placed) * 100 : 50;
-    const oPct = 100 - xPct;
+    const placedStones = stones.black + stones.white;
+    const blackPct = placedStones ? (stones.black / placedStones) * 100 : 50;
+    const whitePct = 100 - blackPct;
     const leadText =
-        placed === 0
+        placedStones === 0
             ? '等待第一手落子'
-            : marks.x === marks.o
+            : stones.black === stones.white
               ? '双方势均力敌'
-              : `${marks.x > marks.o ? xName : oName} 领先`;
-    const difficultyLabel =
-        DIFFICULTY_OPTIONS.find((opt) => opt.id === difficulty)?.label ?? '—';
+              : `${stones.black > stones.white ? blackName : whiteName} 领先 ${Math.abs(
+                    stones.black - stones.white
+                )} 子`;
+    const moveCount = timeline.length - 1;
 
     const statusText = () => {
-        if (phase === 'over') return winner ? `${playerName(winner)} 连成一线` : '对局结束';
+        if (phase === 'over') return winner ? `${playerName(winner)} 连成五子` : '对局结束';
         if (thinking) return '电脑正在思考…';
         return `${playerName(currentPlayer)} 落子`;
     };
 
-    const renderNameArea = (side) => {
-        const isAiSide = mode === 'ai' && aiPlayer === (side === 'x' ? X : O);
+    const renderNameArea = (chipSide) => {
+        const isAiSide = mode === 'ai' && aiPlayer === (chipSide === 'black' ? BLACK : WHITE);
         if (isAiSide) {
             return <span className="gp-score__name-static">电脑</span>;
         }
         return (
             <input
                 className="gp-name-input"
-                value={names[side]}
+                value={names[chipSide]}
                 maxLength={8}
-                onChange={(e) => setNames((prev) => ({ ...prev, [side]: e.target.value }))}
-                aria-label={`${side === 'x' ? 'X 方' : 'O 方'}名字`}
+                onChange={(e) =>
+                    setNames((prev) => ({ ...prev, [chipSide]: e.target.value }))
+                }
+                aria-label={`${chipSide === 'black' ? '黑方' : '白方'}名字`}
             />
         );
     };
 
     return (
-        <div className="tt-page">
+        <div className="gm-page">
             <GameNav />
-            <BackBar title="井字棋" />
+            <BackBar title="五子棋" />
 
             <header className="gp-hero">
                 <div className="ui-container">
-                    <div className="ui-eyebrow">入门首选 · Tic-Tac-Toe</div>
+                    <div className="ui-eyebrow">东方经典 · Gomoku / Five in a Row</div>
                     <h1 className="gp-hero__title">
-                        井字棋 <span className="ui-grad-text">在线对弈</span>
+                        五子棋 <span className="ui-grad-text">在线对弈</span>
                     </h1>
                     <p className="gp-hero__desc">
-                        九格之间，三步定胜负。规则简单到一句话就能说清，
-                        却藏着先手优势、双杀陷阱与封堵的取舍。
-                        一分钟学会，慢慢品味其中的博弈乐趣。
+                        一黑一白，落在交叉点上的每一次选择都在编织棋形。
+                        抢先一步连成五子，又在对手的活三面前及时收手——
+                        最简单的规则，藏着最深的变化。
                     </p>
                     <div className="gp-hero__tags">
-                        <span className="ui-tag ui-tag--brand">3 × 3 棋盘</span>
+                        <span className="ui-tag ui-tag--brand">15 × 15 棋盘</span>
                         <span className="ui-tag">3 档 AI 难度</span>
                         <span className="ui-tag">双人同屏</span>
                         <span className="ui-tag ui-tag--gold">即时提示</span>
@@ -441,7 +434,7 @@ function TicTacToeGame() {
                         <div className="gp-turnbar">
                             <span
                                 className="gp-turnbar__dot"
-                                data-player={currentPlayer === O ? 'o' : 'x'}
+                                data-player={currentPlayer === WHITE ? 'white' : 'black'}
                             />
                             <span className="gp-turnbar__text">{statusText()}</span>
                             {thinking && <span className="gp-turnbar__spinner" aria-hidden="true" />}
@@ -465,12 +458,12 @@ function TicTacToeGame() {
 
                         <div className="gp-boardstats">
                             <div className="gp-boardstat">
-                                <span className="gp-boardstat__label">X 棋子</span>
-                                <strong>{marks.x}</strong>
+                                <span className="gp-boardstat__label">黑子</span>
+                                <strong>{stones.black}</strong>
                             </div>
                             <div className="gp-boardstat">
-                                <span className="gp-boardstat__label">O 棋子</span>
-                                <strong>{marks.o}</strong>
+                                <span className="gp-boardstat__label">白子</span>
+                                <strong>{stones.white}</strong>
                             </div>
                             <div className="gp-boardstat">
                                 <span className="gp-boardstat__label">手数</span>
@@ -483,9 +476,9 @@ function TicTacToeGame() {
                         </div>
 
                         <p className="gp-stage__hint">
-                            <span>点击空格落子</span>
-                            <span>金色虚框是引擎推荐的最佳一手</span>
-                            <span>横竖斜连成三子即胜</span>
+                            <span>点击交叉点落子</span>
+                            <span>金色虚线圈是引擎推荐的最佳一手</span>
+                            <span>横竖斜任一连成五子即胜</span>
                         </p>
 
                         <div className="gp-dash">
@@ -495,24 +488,24 @@ function TicTacToeGame() {
                             </div>
                             <div className="gp-dash__sides">
                                 <div className="gp-dash__side">
-                                    <span className="gp-chip gp-chip--mark gp-chip--x">X</span>
-                                    <span>{xName}</span>
-                                    <strong>{marks.x}</strong>
+                                    <span className="gp-chip gp-chip--black" />
+                                    <span>{blackName}</span>
+                                    <strong>{stones.black}</strong>
                                 </div>
                                 <div className="gp-dash__side gp-dash__side--right">
-                                    <span className="gp-chip gp-chip--mark gp-chip--o">O</span>
-                                    <span>{oName}</span>
-                                    <strong>{marks.o}</strong>
+                                    <span className="gp-chip gp-chip--white" />
+                                    <span>{whiteName}</span>
+                                    <strong>{stones.white}</strong>
                                 </div>
                             </div>
                             <div className="gp-dash__bar">
                                 <span
-                                    className="gp-dash__seg gp-dash__seg--x"
-                                    style={{ width: `${xPct}%` }}
+                                    className="gp-dash__seg gp-dash__seg--dark"
+                                    style={{ width: `${blackPct}%` }}
                                 />
                                 <span
-                                    className="gp-dash__seg gp-dash__seg--o"
-                                    style={{ width: `${oPct}%` }}
+                                    className="gp-dash__seg gp-dash__seg--light"
+                                    style={{ width: `${whitePct}%` }}
                                 />
                             </div>
                             <div className="gp-dash__meta">
@@ -522,7 +515,13 @@ function TicTacToeGame() {
                                 </div>
                                 <div className="gp-dash__cell">
                                     <span>AI 难度</span>
-                                    <strong>{mode === 'ai' ? difficultyLabel : '—'}</strong>
+                                    <strong>
+                                        {mode === 'ai'
+                                            ? (DIFFICULTY_OPTIONS.find(
+                                                  (opt) => opt.id === difficulty
+                                              )?.label ?? '—')
+                                            : '—'}
+                                    </strong>
                                 </div>
                                 <div className="gp-dash__cell">
                                     <span>先手</span>
@@ -536,18 +535,18 @@ function TicTacToeGame() {
                                 </div>
                                 <div className="gp-dash__cell">
                                     <span>当前手数</span>
-                                    <strong>{log.length}</strong>
+                                    <strong>{moveCount}</strong>
                                 </div>
                             </div>
                             <div className="gp-dash__tips">
                                 <span className="gp-dash__tip">
-                                    <b>中心</b> 同时属于四条连线
+                                    <b>天元</b> 开局抢占中心视野最广
                                 </span>
                                 <span className="gp-dash__tip">
-                                    <b>角位</b> 优于边格
+                                    <b>活三</b> 必须立刻封堵
                                 </span>
                                 <span className="gp-dash__tip">
-                                    <b>双杀</b> 让对手无法兼顾
+                                    <b>双三</b> 让对手无从兼顾
                                 </span>
                             </div>
                         </div>
@@ -612,8 +611,8 @@ function TicTacToeGame() {
                                                 电脑先手
                                             </button>
                                         </div>
-                                        <p className="tt-first-note">
-                                            井字棋由执 X 一方先行，选择「电脑先手」时电脑将执 X 开局。
+                                        <p className="gm-first-note">
+                                            五子棋由执黑一方先行，选择「电脑先手」时电脑将执黑开局。
                                         </p>
                                     </div>
                                 </>
@@ -625,25 +624,25 @@ function TicTacToeGame() {
                             <div className="gp-score">
                                 <div
                                     className={`gp-score__item ${
-                                        currentPlayer === X && phase === 'playing' ? 'is-active' : ''
+                                        currentPlayer === BLACK && phase === 'playing' ? 'is-active' : ''
                                     }`}
                                 >
-                                    <span className="gp-chip gp-chip--mark gp-chip--x">X</span>
-                                    {renderNameArea('x')}
-                                    <strong key={`x-${marks.x}`} className="gp-score__value">
-                                        {marks.x}
+                                    <span className="gp-chip gp-chip--black" />
+                                    {renderNameArea('black')}
+                                    <strong key={`b-${stones.black}`} className="gp-score__value">
+                                        {stones.black}
                                     </strong>
                                 </div>
 
                                 <div
                                     className={`gp-score__item ${
-                                        currentPlayer === O && phase === 'playing' ? 'is-active' : ''
+                                        currentPlayer === WHITE && phase === 'playing' ? 'is-active' : ''
                                     }`}
                                 >
-                                    <span className="gp-chip gp-chip--mark gp-chip--o">O</span>
-                                    {renderNameArea('o')}
-                                    <strong key={`o-${marks.o}`} className="gp-score__value">
-                                        {marks.o}
+                                    <span className="gp-chip gp-chip--white" />
+                                    {renderNameArea('white')}
+                                    <strong key={`w-${stones.white}`} className="gp-score__value">
+                                        {stones.white}
                                     </strong>
                                 </div>
                             </div>
@@ -729,17 +728,13 @@ function TicTacToeGame() {
                                                 >
                                                     <span className="gp-log__no">{turnNo}</span>
                                                     <span
-                                                        className={`gp-chip gp-chip--mark gp-chip--${
-                                                            entry.player === X ? 'x' : 'o'
+                                                        className={`gp-chip gp-chip--${
+                                                            entry.player === BLACK ? 'black' : 'white'
                                                         }`}
-                                                    >
-                                                        {entry.player === X ? 'X' : 'O'}
-                                                    </span>
-                                                    <span className="gp-log__label">
-                                                        {entry.label}
-                                                    </span>
+                                                    />
+                                                    <span className="gp-log__label">{entry.label}</span>
                                                     {entry.winning && (
-                                                        <span className="tt-log__tag">三连</span>
+                                                        <span className="gm-log__tag">五连</span>
                                                     )}
                                                 </li>
                                             );
@@ -755,23 +750,22 @@ function TicTacToeGame() {
                 <div className="ui-container">
                     <div className="gp-prose__grid">
                         <div>
-                            <div className="ui-eyebrow">关于井字棋</div>
+                            <div className="ui-eyebrow">关于五子棋</div>
                             <h2 className="ui-section-title">
-                                最简单的规则，
-                                <span className="ui-grad-text">最纯粹的博弈</span>
+                                规则最简，变化最深的
+                                <span className="ui-grad-text">东方棋艺</span>
                             </h2>
                         </div>
                         <div className="gp-prose__body">
                             <p>
-                                井字棋又称三连棋，是一款几乎人人都会、却很少有人真正下明白的游戏。
-                                它在 3×3 的九宫格中进行，双方轮流落子，
-                                谁先把三个自己的标记连成一线，谁就赢下这一局。
+                                五子棋起源于中国，是流传最广、上手最快的棋类之一。
+                                它把棋盘交错成 15×15 的网格，双方各执黑白，轮流在交叉点上落子，
+                                谁的棋子先在任意方向连成五颗，谁就赢下这一局。
                             </p>
                             <p>
-                                它的规则只有一句话，但里面藏着完整的攻防逻辑：
-                                中心与角格的价值差异、双杀式的必胜陷阱、以及「先看进攻再看防守」的决策顺序。
-                                也正因为它足够小，你可以在几秒内复盘每一手，
-                                从而把抽象的策略变成看得见的推理训练。
+                                但「连五」只是表象。真正决定胜负的是棋形——
+                                活三、冲四、双三、禁手与反制，每一步都在为下一步铺路。
+                                当你学会在进攻的同时留意对手的线路，五子棋就会从消遣变成一场真正的博弈。
                             </p>
                         </div>
                     </div>
@@ -781,7 +775,7 @@ function TicTacToeGame() {
             <section className="ui-section gp-rules" id="rules">
                 <div className="ui-container">
                     <div className="ui-eyebrow">玩法规则</div>
-                    <h2 className="ui-section-title">四步读懂井字棋</h2>
+                    <h2 className="ui-section-title">四步读懂五子棋</h2>
                     <div className="gp-steps">
                         {RULES.map((item) => (
                             <div key={item.step} className="gp-step">
@@ -854,10 +848,10 @@ function TicTacToeGame() {
             <section className="gp-cta">
                 <div className="ui-container">
                     <div className="gp-cta__card">
-                        <h2 className="gp-cta__title">准备好连成一线了吗？</h2>
+                        <h2 className="gp-cta__title">准备好连成五子了吗？</h2>
                         <p className="gp-cta__desc">
-                            无论是想练练手速，还是只想在课间来一局，
-                            井字棋都是最轻巧的脑力热身。现在就开始吧。
+                            无论是想锻炼棋感，还是只想在午后放松一局，
+                            五子棋都是娱乐与脑力训练的完美结合。现在就开始吧。
                         </p>
                         <button
                             className="ui-btn ui-btn--primary gp-cta__btn"
@@ -872,7 +866,7 @@ function TicTacToeGame() {
                 </div>
             </section>
 
-            <MoreGames currentId="tictactoe" />
+            <MoreGames currentId="gomoku" />
 
             <footer className="ui-footer">
                 <div className="ui-container">
@@ -889,9 +883,9 @@ function TicTacToeGame() {
                         <div>
                             <h3 className="ui-footer__title">热门游戏</h3>
                             <ul className="ui-footer__list">
-                                <li>井字棋</li>
-                                <li>黑白棋</li>
                                 <li>五子棋</li>
+                                <li>黑白棋</li>
+                                <li>井字棋</li>
                                 <li>数独</li>
                             </ul>
                         </div>
@@ -920,8 +914,7 @@ function TicTacToeGame() {
             <GameOverModal
                 open={showResult}
                 result={result}
-                names={{ black: xName, white: oName }}
-                variant="mark"
+                names={{ black: blackName, white: whiteName }}
                 onRestart={resetGame}
                 onClose={() => setShowResult(false)}
             />
@@ -929,4 +922,4 @@ function TicTacToeGame() {
     );
 }
 
-export default TicTacToeGame;
+export default GomokuGame;

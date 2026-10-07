@@ -91,8 +91,19 @@ function isGameOver(board) {
     return blackMoves === 0 && whiteMoves === 0;
 }
 
+function otherPlayer(player) {
+    return player === BLACK ? WHITE : BLACK;
+}
+
+const COLUMN_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+
+function coordLabel(row, col) {
+    return `${COLUMN_LABELS[col]}${row + 1}`;
+}
+
 export {
     BOARD_SIZE,
+    COLUMN_LABELS,
     EMPTY,
     BLACK,
     WHITE,
@@ -101,5 +112,7 @@ export {
     makeMove,
     countPieces,
     isGameOver,
-    getFlippedPieces
+    getFlippedPieces,
+    otherPlayer,
+    coordLabel
 };

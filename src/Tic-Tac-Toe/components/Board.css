@@ -1,130 +1,258 @@
-.board-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+/* ============================================================
+   井字棋棋盘
+   ============================================================ */
+
+.tt-board-wrap {
+    --board: min(430px, calc(100vw - 190px));
+    --coord: 30px;
+    display: grid;
+    grid-template-columns: var(--coord) repeat(3, calc(var(--board) / 3)) var(--coord);
+    grid-template-rows: var(--coord) repeat(3, calc(var(--board) / 3)) var(--coord);
+    user-select: none;
 }
 
-.labels {
-    display: flex;
-    width: 300px;
-    height: 30px;
+/* 坐标 */
+.tt-coord {
+    display: grid;
+    place-items: center;
+    color: var(--text-3);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
 }
 
-.label-corner {
-    width: 30px;
-    height: 30px;
+.tt-corner {
+    display: block;
 }
 
-.label {
-    width: 100px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
+/* 棋盘底板（铺在格子下方） */
+.tt-board {
+    grid-area: 2 / 2 / 5 / 5;
+    border-radius: 22px;
+    background:
+        radial-gradient(120% 120% at 0% 0%, rgba(124, 92, 255, 0.24), transparent 62%),
+        radial-gradient(120% 120% at 100% 100%, rgba(34, 211, 238, 0.18), transparent 62%),
+        linear-gradient(158deg, #171c2e 0%, #0a0d18 100%);
+    box-shadow:
+        0 0 0 6px rgba(255, 255, 255, 0.04),
+        0 0 0 7px rgba(255, 255, 255, 0.09),
+        0 26px 62px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
-.board {
-    display: flex;
-    flex-direction: column;
-    border: 2px solid #333;
-    border-radius: 4px;
-}
-
-.board-row {
-    display: flex;
-}
-
-.cell {
-    width: 100px;
-    height: 100px;
-    border: 1px solid #333;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+/* 格子 */
+.tt-cell {
     position: relative;
-    background-color: #f0f0f0;
+    z-index: 1;
+    margin: calc(var(--board) * 0.014);
+    padding: 0;
+    border: none;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.045);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+    display: grid;
+    place-items: center;
+    font-family: inherit;
+    color: inherit;
+    cursor: default;
+    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-.cell:hover {
-    background-color: #e0e0e0;
+.tt-cell.is-playable {
+    cursor: pointer;
 }
 
-.valid-move:hover {
-    background-color: #d0f0d0;
+.tt-cell.is-playable:hover {
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 0 0 1px var(--stroke-2), 0 10px 24px rgba(0, 0, 0, 0.35);
 }
 
-.piece {
-    font-size: 48px;
-    font-weight: bold;
-    width: 80px;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.tt-cell:focus-visible {
+    outline: 2px solid var(--brand-2);
+    outline-offset: 2px;
+}
+
+/* 获胜高亮 */
+.tt-cell.is-win {
+    background: rgba(52, 211, 153, 0.14);
+    box-shadow:
+        inset 0 0 0 1px rgba(52, 211, 153, 0.6),
+        0 0 28px rgba(52, 211, 153, 0.35);
+    animation: tt-win 1.2s ease-in-out infinite;
+}
+
+@keyframes tt-win {
+    0%,
+    100% {
+        box-shadow:
+            inset 0 0 0 1px rgba(52, 211, 153, 0.6),
+            0 0 22px rgba(52, 211, 153, 0.28);
+    }
+    50% {
+        box-shadow:
+            inset 0 0 0 1px rgba(52, 211, 153, 0.95),
+            0 0 36px rgba(52, 211, 153, 0.5);
+    }
+}
+
+/* ---------------- 棋子 ---------------- */
+.tt-mark {
+    position: relative;
+    width: 60%;
+    height: 60%;
+    animation: tt-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tt-mark--x::before,
+.tt-mark--x::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 100%;
+    height: 13%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #a78bfa, #7c5cff);
+    box-shadow: 0 0 18px rgba(124, 92, 255, 0.55);
+}
+
+.tt-mark--x::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.tt-mark--x::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.tt-mark--o::before {
+    content: '';
+    position: absolute;
+    inset: 0;
     border-radius: 50%;
-    text-align: center;
+    border: calc(var(--board) * 0.018) solid #22d3ee;
+    box-shadow:
+        0 0 20px rgba(34, 211, 238, 0.55),
+        inset 0 0 14px rgba(34, 211, 238, 0.35);
 }
 
-.piece.x {
-    color: #1976d2;
-    background-color: #e3f2fd;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+@keyframes tt-pop {
+    0% {
+        transform: scale(0.35);
+        opacity: 0;
+    }
+    60% {
+        transform: scale(1.12);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
-.piece.o {
-    color: #c62828;
-    background-color: #ffebee;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.hint {
-    width: 20px;
-    height: 20px;
+/* 最后一手标记 */
+.tt-last {
+    position: absolute;
+    top: 12%;
+    right: 12%;
+    width: 12%;
+    height: 12%;
     border-radius: 50%;
-    background-color: rgba(0, 0, 0, 0.2);
+    background: var(--gold);
+    box-shadow: 0 0 12px rgba(245, 196, 81, 0.85);
+    animation: tt-last-pop 0.4s ease;
 }
 
-.x-hint {
-    background-color: rgba(52, 152, 219, 0.3);
+@keyframes tt-last-pop {
+    0% {
+        opacity: 0;
+        transform: scale(1.8);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
-.o-hint {
-    background-color: rgba(231, 76, 60, 0.3);
+/* 悬停虚影 */
+.tt-mark.tt-ghost {
+    position: absolute;
+    opacity: 0;
+    animation: none;
+    transition: opacity 0.2s ease;
 }
 
-.left-label, .right-label {
-    width: 30px;
-    height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
-    background-color: #f8f9fa;
+.tt-mark.tt-ghost::before,
+.tt-mark.tt-ghost::after {
+    box-shadow: none;
 }
 
-.left-label {
-    border-right: 1px solid #333;
+.tt-cell.is-playable:hover .tt-mark.tt-ghost {
+    opacity: 0.2;
 }
 
-.right-label {
-    border-left: 1px solid #333;
+/* 可落子呼吸点 */
+.tt-dot {
+    position: absolute;
+    width: 9%;
+    height: 9%;
+    border-radius: 50%;
+    background: var(--text-3);
+    animation: tt-breathe 2.1s ease-in-out infinite;
+    transition: opacity 0.2s ease;
 }
 
-.top-labels, .bottom-labels {
-    background-color: #f8f9fa;
-    border: 1px solid #333;
-    border-bottom: none;
-    border-radius: 4px 4px 0 0;
+.tt-cell.is-playable:hover .tt-dot {
+    opacity: 0;
 }
 
-.bottom-labels {
-    border-top: none;
-    border-bottom: 1px solid #333;
-    border-radius: 0 0 4px 4px;
+@keyframes tt-breathe {
+    0%,
+    100% {
+        transform: scale(0.7);
+        opacity: 0.25;
+    }
+    50% {
+        transform: scale(1.15);
+        opacity: 0.6;
+    }
+}
+
+/* 引擎推荐落点 */
+.tt-hint-ring {
+    position: absolute;
+    inset: 9%;
+    border-radius: 16px;
+    border: 2px dashed rgba(245, 196, 81, 0.95);
+    box-shadow: 0 0 18px rgba(245, 196, 81, 0.5);
+    animation: tt-ring 1.3s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 2;
+}
+
+@keyframes tt-ring {
+    0%,
+    100% {
+        transform: scale(0.94);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.02);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 760px) {
+    .tt-board-wrap {
+        --board: min(430px, calc(100vw - 150px));
+        --coord: 22px;
+    }
+    .tt-coord {
+        font-size: 0.68rem;
+    }
+    .tt-board {
+        border-radius: 18px;
+    }
+    .tt-cell {
+        border-radius: 12px;
+    }
 }

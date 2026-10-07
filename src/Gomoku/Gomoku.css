@@ -1,0 +1,43 @@
+/* ============================================================
+   五子棋页面（在共用对局样式之上做少量补充）
+   ============================================================ */
+
+.gm-page {
+    --board: min(620px, calc(100vw - 552px));
+    min-height: 100vh;
+}
+
+/* 让状态条与数据条跟棋盘同宽对齐 */
+.gm-page .gp-turnbar,
+.gm-page .gp-boardstats {
+    max-width: var(--board);
+}
+
+/* 棋谱：制胜一手标记 */
+.gm-log__tag {
+    margin-left: auto;
+    color: var(--gold);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+/* 先手提示 */
+.gm-first-note {
+    margin-top: 10px;
+    font-size: 0.82rem;
+    color: var(--text-3);
+    line-height: 1.6;
+}
+
+@media (max-width: 1080px) {
+    .gm-page {
+        --board: min(620px, calc(100vw - 152px));
+    }
+}
+
+@media (max-width: 760px) {
+    .gm-page {
+        --board: min(620px, calc(100vw - 120px));
+    }
+}

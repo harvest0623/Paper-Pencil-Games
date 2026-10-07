@@ -1,92 +1,129 @@
-import React from 'react';
-import { BOARD_SIZE, EMPTY, X, O } from '../utils/gameLogic';
+import { BOARD_SIZE, COLUMN_LABELS, EMPTY, X, coordLabel } from '../utils/gameLogic';
 import './Board.css';
 
-function Board({ board, validMoves, currentPlayer, onCellClick }) {
-    const columns = ['A', 'B', 'C'];
-    const rows = ['1', '2', '3'];
+function Board({
+    board,
+    currentPlayer,
+    lastMove,
+    winCells = [],
+    hint,
+    onCellClick,
+    interactive = true
+}) {
+    const isWin = (row, col) => winCells.some((cell) => cell.row === row && cell.col === col);
+    const isLast = (row, col) => lastMove && lastMove.row === row && lastMove.col === col;
+    const isHint = (row, col) => hint && hint.row === row && hint.col === col;
 
-    const isValidMove = (row, col) => {
-        return validMoves.some(move => move.row === row && move.col === col);
-    };
+    const nodes = [];
 
-    const renderCell = (row, col) => {
-        const cellValue = board[row][col];
-        const isMoveValid = isValidMove(row, col);
-
-        let cellClass = 'cell';
-        if (isMoveValid) {
-            cellClass += ' valid-move';
-        }
-
-        return (
-            <div
-                key={`${row}-${col}`}
-                className={cellClass}
-                onClick={() => isMoveValid && onCellClick(row, col)}
-            >
-                {cellValue === X && (
-                    <div className="piece x">X</div>
-                )}
-                {cellValue === O && (
-                    <div className="piece o">O</div>
-                )}
-                {cellValue === EMPTY && isMoveValid && (
-                    <div className={`hint ${currentPlayer === X ? 'x-hint' : 'o-hint'}`}></div>
-                )}
-            </div>
+    /* 四角留白，让坐标与棋盘严格对齐 */
+    [1, BOARD_SIZE + 2].forEach((col) => {
+        nodes.push(
+            <span
+                key={`corner-top-${col}`}
+                className="tt-corner"
+                style={{ gridRow: 1, gridColumn: col }}
+            />
         );
-    };
+        nodes.push(
+            <span
+                key={`corner-bottom-${col}`}
+                className="tt-corner"
+                style={{ gridRow: BOARD_SIZE + 2, gridColumn: col }}
+            />
+        );
+    });
 
-    const renderBoardWithSideLabels = () => {
-        const boardRows = [];
-        for (let row = 0; row < BOARD_SIZE; row++) {
-            const cells = [];
-            cells.push(<div key={`left-${row}`} className="label left-label">{rows[row]}</div>);
-            for (let col = 0; col < BOARD_SIZE; col++) {
-                cells.push(renderCell(row, col));
-            }
-            cells.push(<div key={`right-${row}`} className="label right-label">{rows[row]}</div>);
-            boardRows.push(
-                <div key={row} className="board-row">
-                    {cells}
-                </div>
+    /* 顶部 / 底部列坐标 */
+    COLUMN_LABELS.forEach((label, col) => {
+        nodes.push(
+            <span
+                key={`col-top-${label}`}
+                className="tt-coord"
+                style={{ gridRow: 1, gridColumn: col + 2 }}
+            >
+                {label}
+            </span>
+        );
+        nodes.push(
+            <span
+                key={`col-bottom-${label}`}
+                className="tt-coord"
+                style={{ gridRow: BOARD_SIZE + 2, gridColumn: col + 2 }}
+            >
+                {label}
+            </span>
+        );
+    });
+
+    for (let row = 0; row < BOARD_SIZE; row++) {
+        nodes.push(
+            <span
+                key={`row-left-${row}`}
+                className="tt-coord"
+                style={{ gridRow: row + 2, gridColumn: 1 }}
+            >
+                {row + 1}
+            </span>
+        );
+        nodes.push(
+            <span
+                key={`row-right-${row}`}
+                className="tt-coord"
+                style={{ gridRow: row + 2, gridColumn: BOARD_SIZE + 2 }}
+            >
+                {row + 1}
+            </span>
+        );
+
+        for (let col = 0; col < BOARD_SIZE; col++) {
+            const value = board[row][col];
+            const playable = value === EMPTY && interactive;
+            const classes = ['tt-cell'];
+            if (playable) classes.push('is-playable');
+            if (isWin(row, col)) classes.push('is-win');
+
+            nodes.push(
+                <button
+                    key={`cell-${row}-${col}`}
+                    type="button"
+                    className={classes.join(' ')}
+                    style={{ gridRow: row + 2, gridColumn: col + 2 }}
+                    onClick={() => playable && onCellClick(row, col)}
+                    disabled={!playable}
+                    aria-label={coordLabel(row, col)}
+                >
+                    {value !== EMPTY ? (
+                        <>
+                            <span
+                                className={`tt-mark tt-mark--${
+                                    value === X ? 'x' : 'o'
+                                }`}
+                            />
+                            {isLast(row, col) && <span className="tt-last" />}
+                        </>
+                    ) : (
+                        playable && (
+                            <>
+                                <span className="tt-dot" />
+                                <span
+                                    className={`tt-mark tt-ghost tt-mark--${
+                                        currentPlayer === X ? 'x' : 'o'
+                                    }`}
+                                />
+                            </>
+                        )
+                    )}
+                    {isHint(row, col) && <span className="tt-hint-ring" />}
+                </button>
             );
         }
-        return boardRows;
-    };
-
-    const renderTopLabels = () => {
-        return (
-            <div className="labels top-labels">
-                <div className="label-corner"></div>
-                {columns.map((col, index) => (
-                    <div key={index} className="label">{col}</div>
-                ))}
-                <div className="label-corner"></div>
-            </div>
-        );
-    };
-
-    const renderBottomLabels = () => {
-        return (
-            <div className="labels bottom-labels">
-                <div className="label-corner"></div>
-                {columns.map((col, index) => (
-                    <div key={index} className="label">{col}</div>
-                ))}
-                <div className="label-corner"></div>
-            </div>
-        );
-    };
+    }
 
     return (
-        <div className="board-wrapper">
-            {renderTopLabels()}
-            <div className="board">
-                {renderBoardWithSideLabels()}
-            </div>
-            {renderBottomLabels()}
+        <div className="tt-board-wrap">
+            <div className="tt-board" aria-hidden="true" />
+            {nodes}
         </div>
     );
 }
