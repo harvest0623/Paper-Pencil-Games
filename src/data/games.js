@@ -46,8 +46,8 @@ export const GAMES = [
         mark: '数',
         color: '#22d3ee',
         description: '用 1 到 9 填满九宫格，每行每列每个宫都不重复。纯粹的逻辑推理。',
-        path: null,
-        playable: false,
+        path: '/home/sudoku',
+        playable: true,
         accent: 'cyan',
         meta: ['1 人', '10 分钟', '逻辑']
     },

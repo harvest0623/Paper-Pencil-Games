@@ -1,0 +1,159 @@
+/* ============================================================
+   数独页面
+   ============================================================ */
+
+.sd-page {
+    min-height: 100vh;
+    --board: min(540px, calc(100vw - 190px));
+}
+
+.sd-page .gp-turnbar,
+.sd-page .gp-boardstats {
+    max-width: var(--board);
+}
+
+.sd-page .gp-stage__hint {
+    max-width: calc(var(--board) + 60px);
+}
+
+/* ---------------- 难度选择 ---------------- */
+.sd-diff {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    width: 100%;
+}
+
+.sd-diff .ui-seg__item {
+    padding: 10px 4px;
+    font-size: 0.86rem;
+}
+
+.sd-diff__note {
+    margin-top: 12px;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--text-3);
+}
+
+/* ---------------- 数字键盘 ---------------- */
+.sd-keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.sd-key {
+    position: relative;
+    display: grid;
+    place-items: center;
+    padding: 12px 6px 14px;
+    border-radius: var(--r-sm);
+    background: rgba(0, 0, 0, 0.26);
+    border: 1px solid var(--stroke-1);
+    color: var(--text-1);
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.12s ease;
+}
+
+.sd-key:hover:not(:disabled) {
+    background: rgba(124, 92, 255, 0.16);
+    border-color: rgba(124, 92, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.sd-key:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.sd-key__num {
+    font-size: 1.22rem;
+    font-weight: 800;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.sd-key__left {
+    position: absolute;
+    right: 7px;
+    bottom: 4px;
+    font-size: 0.66rem;
+    font-weight: 700;
+    color: var(--text-3);
+    font-variant-numeric: tabular-nums;
+}
+
+.sd-key.is-done {
+    opacity: 0.32;
+    cursor: not-allowed;
+}
+
+.sd-keypad__actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.sd-keypad__actions .ui-btn {
+    padding: 11px 8px;
+    font-size: 0.9rem;
+}
+
+.sd-note-toggle {
+    letter-spacing: 0.02em;
+}
+
+/* ---------------- 进度条 ---------------- */
+.sd-progress {
+    height: 10px;
+    border-radius: var(--r-full);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: inset 0 0 0 1px var(--stroke-1);
+    overflow: hidden;
+}
+
+.sd-progress__fill {
+    display: block;
+    height: 100%;
+    border-radius: var(--r-full);
+    background: var(--brand-grad);
+    transition: width 0.5s cubic-bezier(0.34, 1.1, 0.64, 1);
+}
+
+/* ---------------- 操作记录 ---------------- */
+.sd-log__text {
+    margin-left: auto;
+    font-size: 0.84rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.sd-log__text.is-fill {
+    color: var(--brand-2);
+}
+
+.sd-log__text.is-wrong {
+    color: #ff8a8a;
+}
+
+.sd-log__text.is-note {
+    color: var(--text-2);
+}
+
+.sd-log__text.is-clear {
+    color: var(--text-3);
+}
+
+.sd-log__text.is-hint {
+    color: var(--gold);
+}
+
+@media (max-width: 760px) {
+    .sd-page {
+        --board: min(540px, calc(100vw - 130px));
+    }
+    .sd-page .gp-stage__hint {
+        max-width: 100%;
+    }
+}
