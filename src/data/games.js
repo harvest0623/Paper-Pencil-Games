@@ -58,8 +58,8 @@ export const GAMES = [
         mark: '华',
         color: '#f472b6',
         description: '滑动方块将数字还原成一到十五的排列，考验步数与耐心。',
-        path: null,
-        playable: false,
+        path: '/home/huarongdao',
+        playable: true,
         accent: 'rose',
         meta: ['1 人', '5 分钟', '益智']
     },

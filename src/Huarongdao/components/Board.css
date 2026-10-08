@@ -1,0 +1,213 @@
+/* ============================================================
+   数字华容道棋盘
+   ============================================================ */
+
+.hr-board-wrap {
+    --board: min(540px, calc(100vw - 190px));
+    --coord: 26px;
+    width: calc(var(--board) + var(--coord) * 2);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    user-select: none;
+}
+
+/* ---------------- 坐标 ---------------- */
+.hr-coord-row {
+    display: grid;
+    grid-template-columns: repeat(var(--cols), 1fr);
+    width: var(--board);
+    margin: 0 auto;
+}
+
+.hr-coord-col {
+    display: grid;
+    grid-template-rows: repeat(var(--cols), calc(var(--board) / var(--cols)));
+    width: var(--coord);
+}
+
+.hr-coord {
+    display: grid;
+    place-items: center;
+    color: var(--text-3);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+}
+
+.hr-board-mid {
+    display: grid;
+    grid-template-columns: var(--coord) var(--board) var(--coord);
+    align-items: center;
+}
+
+/* ---------------- 棋盘底板 ---------------- */
+.hr-board {
+    position: relative;
+    width: var(--board);
+    height: var(--board);
+    border-radius: 18px;
+    background:
+        radial-gradient(130% 130% at 0% 0%, rgba(244, 114, 182, 0.16), transparent 62%),
+        radial-gradient(130% 130% at 100% 100%, rgba(124, 92, 255, 0.2), transparent 62%),
+        linear-gradient(158deg, #141a29 0%, #090c15 100%);
+    border: 2px solid rgba(148, 163, 184, 0.4);
+    box-shadow:
+        0 0 0 6px rgba(255, 255, 255, 0.035),
+        0 24px 58px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* ---------------- 方块 ---------------- */
+.hr-tile {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(100% / var(--cols));
+    height: calc(100% / var(--cols));
+    padding: 0;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    color: inherit;
+    cursor: default;
+    transition: transform 0.2s cubic-bezier(0.34, 1.16, 0.64, 1);
+    will-change: transform;
+    z-index: 1;
+}
+
+.hr-tile__face {
+    position: absolute;
+    inset: 5px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.03));
+    border: 1px solid rgba(148, 163, 184, 0.42);
+    box-shadow:
+        0 10px 22px rgba(0, 0, 0, 0.42),
+        inset 0 1px 0 rgba(255, 255, 255, 0.16);
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.hr-tile__num {
+    font-size: calc(var(--board) / var(--cols) * 0.34);
+    font-weight: 800;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-1);
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* 已归位的方块：品牌青色点缀 */
+.hr-tile.is-placed .hr-tile__face {
+    background: linear-gradient(160deg, rgba(34, 211, 238, 0.26), rgba(34, 211, 238, 0.06));
+    border-color: rgba(34, 211, 238, 0.55);
+    box-shadow:
+        0 10px 22px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        0 0 16px rgba(34, 211, 238, 0.22);
+}
+
+.hr-tile.is-placed .hr-tile__num {
+    color: #eafcff;
+    text-shadow: 0 0 14px rgba(34, 211, 238, 0.55);
+}
+
+/* 可滑动方块：可点击 + 悬停反馈 */
+.hr-tile.is-movable {
+    cursor: pointer;
+    z-index: 2;
+}
+
+.hr-tile.is-movable .hr-tile__face {
+    background: linear-gradient(160deg, rgba(244, 114, 182, 0.3), rgba(124, 92, 255, 0.12));
+    border-color: rgba(244, 114, 182, 0.6);
+}
+
+.hr-tile.is-movable:hover .hr-tile__face {
+    transform: scale(1.04);
+    box-shadow:
+        0 14px 28px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22),
+        0 0 20px rgba(244, 114, 182, 0.4);
+}
+
+.hr-tile.is-movable:active .hr-tile__face {
+    transform: scale(0.98);
+}
+
+.hr-tile:focus-visible {
+    outline: none;
+}
+
+.hr-tile:focus-visible .hr-tile__face {
+    border-color: var(--brand-2);
+    box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.6);
+}
+
+/* ---------------- 空格凹槽 ---------------- */
+.hr-hole {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(100% / var(--cols));
+    height: calc(100% / var(--cols));
+    transition: transform 0.2s cubic-bezier(0.34, 1.16, 0.64, 1);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.hr-hole::after {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.42);
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.65);
+    border: 1px dashed rgba(148, 163, 184, 0.3);
+}
+
+/* ---------------- 引擎提示 ---------------- */
+.hr-tile.is-hint .hr-tile__face {
+    border: 2px dashed rgba(245, 196, 81, 0.95);
+    box-shadow:
+        0 10px 22px rgba(0, 0, 0, 0.45),
+        0 0 20px rgba(245, 196, 81, 0.5);
+    animation: hr-hint 1.3s ease-in-out infinite;
+}
+
+@keyframes hr-hint {
+    0%,
+    100% {
+        transform: scale(0.97);
+        opacity: 0.82;
+    }
+    50% {
+        transform: scale(1.03);
+        opacity: 1;
+    }
+}
+
+/* ---------------- 响应式 ---------------- */
+@media (max-width: 760px) {
+    .hr-board-wrap {
+        --board: min(540px, calc(100vw - 130px));
+        --coord: 18px;
+    }
+    .hr-coord {
+        font-size: 0.66rem;
+    }
+    .hr-board {
+        border-radius: 14px;
+    }
+    .hr-tile__face,
+    .hr-hole::after {
+        inset: 4px;
+        border-radius: 9px;
+    }
+}

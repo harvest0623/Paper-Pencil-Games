@@ -1,0 +1,75 @@
+/* ============================================================
+   数字华容道页面
+   ============================================================ */
+
+.hr-page {
+    min-height: 100vh;
+    --board: min(540px, calc(100vw - 190px));
+}
+
+.hr-page .gp-turnbar,
+.hr-page .gp-boardstats {
+    max-width: var(--board);
+}
+
+.hr-page .gp-stage__hint {
+    max-width: calc(var(--board) + 60px);
+}
+
+/* ---------------- 难度选择 ---------------- */
+.hr-diff {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    width: 100%;
+}
+
+.hr-diff .ui-seg__item {
+    padding: 10px 4px;
+    font-size: 0.86rem;
+}
+
+.hr-diff__note {
+    margin-top: 12px;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--text-3);
+}
+
+/* ---------------- 进度条 ---------------- */
+.hr-progress {
+    height: 10px;
+    border-radius: var(--r-full);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: inset 0 0 0 1px var(--stroke-1);
+    overflow: hidden;
+}
+
+.hr-progress__fill {
+    display: block;
+    height: 100%;
+    border-radius: var(--r-full);
+    background: linear-gradient(135deg, #22d3ee, #7c5cff);
+    transition: width 0.5s cubic-bezier(0.34, 1.1, 0.64, 1);
+}
+
+/* ---------------- 操作记录 ---------------- */
+.hr-log__text {
+    margin-left: auto;
+    font-size: 0.84rem;
+    font-weight: 700;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.hr-log__text.is-move {
+    color: var(--brand-2);
+}
+
+@media (max-width: 760px) {
+    .hr-page {
+        --board: min(540px, calc(100vw - 130px));
+    }
+    .hr-page .gp-stage__hint {
+        max-width: 100%;
+    }
+}
