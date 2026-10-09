@@ -5,6 +5,7 @@ import GomokuGame from './Gomoku/GomokuGame';
 import TicTacToeGame from './Tic-Tac-Toe/TicTacToeGame';
 import SudokuGame from './Sudoku/SudokuGame';
 import HuarongdaoGame from './Huarongdao/HuarongdaoGame';
+import MinesweeperGame from './Minesweeper/MinesweeperGame';
 import ScrollToTop from './components/ScrollToTop';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
                 <Route path="/home/tic-tac-toe" element={<TicTacToeGame />} />
                 <Route path="/home/sudoku" element={<SudokuGame />} />
                 <Route path="/home/huarongdao" element={<HuarongdaoGame />} />
+                <Route path="/home/minesweeper" element={<MinesweeperGame />} />
             </Routes>
         </Router>
     );

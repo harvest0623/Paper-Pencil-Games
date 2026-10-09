@@ -70,8 +70,8 @@ export const GAMES = [
         mark: '雷',
         color: '#94a3b8',
         description: '根据数字提示推导地雷位置，在不开雷的前提下清空整片棋盘。',
-        path: null,
-        playable: false,
+        path: '/home/minesweeper',
+        playable: true,
         accent: 'slate',
         meta: ['1 人', '5 分钟', '逻辑']
     },
