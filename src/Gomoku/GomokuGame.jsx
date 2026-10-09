@@ -160,7 +160,14 @@ function GomokuGame() {
     const aiPlayer = computerFirst ? BLACK : WHITE;
     const humanPlayer = computerFirst ? WHITE : BLACK;
 
-    const blackName = mode === 'ai' && aiPlayer === BLACK ? '电脑' : names.black;
+    const blackName =
+        mode === 'ai'
+            ? aiPlayer === BLACK
+                ? '电脑'
+                : names.black
+            : names.black === '玩家'
+              ? '玩家 1'
+              : names.black;
     const whiteName = mode === 'ai' && aiPlayer === WHITE ? '电脑' : names.white;
 
     const playerName = useCallback(
@@ -281,7 +288,8 @@ function GomokuGame() {
                 sub: humanWon
                     ? '你率先连成五子，拿下本局，干得漂亮。'
                     : '电脑率先连成五子，调整策略再来一局吧。',
-                scores
+                scores,
+                winnerSide: winner === BLACK ? 'black' : 'white'
             };
         }
 
@@ -289,7 +297,8 @@ function GomokuGame() {
             tone: 'win',
             title: `${playerName(winner)} 获胜`,
             sub: `${playerName(winner)} 率先连成五子，赢得本局。`,
-            scores
+            scores,
+            winnerSide: winner === BLACK ? 'black' : 'white'
         };
     }, [phase, winner, stones, mode, humanPlayer, playerName]);
 
@@ -393,7 +402,7 @@ function GomokuGame() {
         return (
             <input
                 className="gp-name-input"
-                value={names[chipSide]}
+                value={chipSide === 'black' ? blackName : whiteName}
                 maxLength={8}
                 onChange={(e) =>
                     setNames((prev) => ({ ...prev, [chipSide]: e.target.value }))

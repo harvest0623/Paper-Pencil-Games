@@ -1,7 +1,14 @@
 function GameOverModal({ open, result, names, onRestart, onClose, variant = 'stone' }) {
     if (!open || !result) return null;
 
-    const { tone, title, sub, scores } = result;
+    const { tone, title, sub, scores, winnerSide } = result;
+
+    /* 胜方颜色标注：棋子类显示「黑棋/白棋」，井字棋显示「X/O」 */
+    const sideLabel = winnerSide
+        ? variant === 'mark'
+            ? `${winnerSide === 'x' ? 'X' : 'O'} 获胜`
+            : `${winnerSide === 'black' ? '黑棋' : '白棋'}获胜`
+        : null;
 
     const chip = (side) =>
         variant === 'mark' ? (
@@ -21,6 +28,12 @@ function GameOverModal({ open, result, names, onRestart, onClose, variant = 'sto
                 </div>
                 <h3 className="gp-modal__title">{title}</h3>
                 <p className="gp-modal__sub">{sub}</p>
+
+                {sideLabel && (
+                    <span className={`gp-modal__side gp-modal__side--${winnerSide}`}>
+                        {sideLabel}
+                    </span>
+                )}
 
                 <div className="gp-modal__score">
                     <div className="gp-modal__score-item">

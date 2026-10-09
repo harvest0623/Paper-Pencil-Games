@@ -168,7 +168,14 @@ function TicTacToeGame() {
     const aiPlayer = computerFirst ? X : O;
     const humanPlayer = computerFirst ? O : X;
 
-    const xName = mode === 'ai' && aiPlayer === X ? '电脑' : names.x;
+    const xName =
+        mode === 'ai'
+            ? aiPlayer === X
+                ? '电脑'
+                : names.x
+            : names.x === '玩家'
+              ? '玩家 1'
+              : names.x;
     const oName = mode === 'ai' && aiPlayer === O ? '电脑' : names.o;
 
     const playerName = useCallback(
@@ -290,7 +297,8 @@ function TicTacToeGame() {
                 sub: humanWon
                     ? '你率先连成一线，拿下本局，干得漂亮。'
                     : '电脑率先连成一线，换个思路再来一局吧。',
-                scores
+                scores,
+                winnerSide: winner === X ? 'x' : 'o'
             };
         }
 
@@ -298,7 +306,8 @@ function TicTacToeGame() {
             tone: 'win',
             title: `${playerName(winner)} 获胜`,
             sub: `${playerName(winner)} 率先连成三子，赢得本局。`,
-            scores
+            scores,
+            winnerSide: winner === X ? 'x' : 'o'
         };
     }, [phase, winner, marks, mode, humanPlayer, playerName]);
 
@@ -402,7 +411,7 @@ function TicTacToeGame() {
         return (
             <input
                 className="gp-name-input"
-                value={names[side]}
+                value={side === 'x' ? xName : oName}
                 maxLength={8}
                 onChange={(e) => setNames((prev) => ({ ...prev, [side]: e.target.value }))}
                 aria-label={`${side === 'x' ? 'X 方' : 'O 方'}名字`}

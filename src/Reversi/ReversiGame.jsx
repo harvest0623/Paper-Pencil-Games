@@ -158,7 +158,8 @@ function ReversiGame() {
     const scores = useMemo(() => countPieces(board), [board]);
 
     const whiteName = mode === 'ai' ? '电脑' : names.white;
-    const blackName = names.black;
+    /* 双人模式下先手名显示为「玩家 1」，与「玩家 2」呼应 */
+    const blackName = mode === 'pvp' && names.black === '玩家' ? '玩家 1' : names.black;
     const playerName = useCallback(
         (player) => (player === BLACK ? blackName : whiteName),
         [blackName, whiteName]
@@ -277,6 +278,7 @@ function ReversiGame() {
         }
         const winner = black > white ? blackName : whiteName;
         const winnerCount = Math.max(black, white);
+        const winnerSide = black > white ? 'black' : 'white';
         if (mode === 'ai') {
             const humanWon = black > white;
             return {
@@ -285,14 +287,16 @@ function ReversiGame() {
                 sub: humanWon
                     ? `你以 ${winnerCount} 颗棋子拿下本局，干得漂亮。`
                     : `电脑以 ${winnerCount} 颗棋子取胜，调整策略再来一局吧。`,
-                scores
+                scores,
+                winnerSide
             };
         }
         return {
             tone: 'win',
             title: `${winner} 获胜`,
             sub: `${winner} 以 ${winnerCount} 颗棋子赢得本局。`,
-            scores
+            scores,
+            winnerSide
         };
     }, [phase, scores, blackName, whiteName, mode]);
 

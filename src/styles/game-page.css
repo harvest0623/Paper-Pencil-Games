@@ -872,6 +872,21 @@
     line-height: 1.7;
 }
 
+/* 胜方颜色标注（黑棋/白棋 · X/O） */
+.gp-modal__side {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 16px;
+    padding: 6px 16px;
+    border-radius: var(--r-full);
+    font-size: 0.84rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #ffdf9a;
+    background: rgba(245, 196, 81, 0.14);
+    border: 1px solid rgba(245, 196, 81, 0.32);
+}
+
 .gp-modal__score {
     display: flex;
     align-items: center;
