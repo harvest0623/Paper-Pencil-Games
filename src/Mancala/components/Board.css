@@ -1,0 +1,244 @@
+/* ============================================================
+   曼卡拉棋盘（横向跑道造型：两排各 6 坑 + 左右两个竖直宝库）
+   ============================================================ */
+
+.mc-board-wrap {
+    --mc-w: var(--board, min(760px, calc(100vw - 180px)));
+    width: var(--mc-w);
+    user-select: none;
+}
+
+.mc-board {
+    display: flex;
+    align-items: stretch;
+    gap: calc(var(--mc-w) * 0.017);
+    padding: calc(var(--mc-w) * 0.024);
+    border-radius: calc(var(--mc-w) * 0.15);
+    background-color: #a9762f;
+    background-image:
+        radial-gradient(120% 130% at 50% -25%, rgba(255, 255, 255, 0.3), transparent 60%),
+        linear-gradient(160deg, #c4914a 0%, #a9762f 48%, #7a5322 100%);
+    box-shadow:
+        0 0 0 6px rgba(255, 255, 255, 0.04),
+        0 0 0 7px rgba(255, 255, 255, 0.09),
+        0 26px 62px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.42),
+        inset 0 -34px 60px rgba(70, 44, 10, 0.34);
+}
+
+/* ---------------- 宝库 ---------------- */
+.mc-store {
+    width: calc(var(--mc-w) * 0.118);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: calc(var(--mc-w) * 0.02) 4px;
+    border-radius: calc(var(--mc-w) * 0.06);
+    background: radial-gradient(76% 58% at 50% 18%, rgba(0, 0, 0, 0.32), rgba(0, 0, 0, 0.66));
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.13),
+        inset 0 12px 26px rgba(0, 0, 0, 0.55);
+}
+
+.mc-store__label {
+    font-size: calc(var(--mc-w) * 0.016);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.mc-store__stones {
+    flex: 1;
+    width: 88%;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    gap: 3px;
+    overflow: hidden;
+}
+
+.mc-store__count {
+    font-size: calc(var(--mc-w) * 0.03);
+    font-weight: 800;
+    color: #ffe9b8;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------------- 坑位区域 ---------------- */
+.mc-pits {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--mc-w) * 0.015);
+}
+
+.mc-row {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: calc(var(--mc-w) * 0.015);
+}
+
+.mc-pit {
+    position: relative;
+    aspect-ratio: 1 / 0.92;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    font-family: inherit;
+    color: inherit;
+    cursor: default;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(74% 74% at 50% 32%, #251a0d 0%, #150f08 62%, #0c0805 100%);
+    box-shadow:
+        inset 0 10px 22px rgba(0, 0, 0, 0.72),
+        inset 0 -6px 12px rgba(255, 255, 255, 0.05),
+        0 2px 0 rgba(255, 255, 255, 0.1),
+        0 3px 7px rgba(0, 0, 0, 0.42);
+    transition: transform 0.18s ease, filter 0.22s ease;
+}
+
+.mc-pit:disabled {
+    opacity: 1;
+}
+
+/* 归属方环形标记：下方青、上方紫 */
+.mc-pit::before {
+    content: '';
+    position: absolute;
+    inset: 5%;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    pointer-events: none;
+}
+
+.mc-pit.is-p1::before {
+    border-color: rgba(34, 211, 238, 0.24);
+}
+
+.mc-pit.is-p2::before {
+    border-color: rgba(167, 139, 250, 0.24);
+}
+
+/* 可点击的坑：呼吸 + 悬停反馈 */
+.mc-pit.is-clickable {
+    cursor: pointer;
+    animation: mc-breathe 2.2s ease-in-out infinite;
+}
+
+.mc-pit.is-clickable:hover {
+    transform: translateY(-2px) scale(1.04);
+    animation: none;
+    filter: drop-shadow(0 0 12px rgba(245, 196, 81, 0.6));
+}
+
+/* 上一次播种落点 */
+.mc-pit.is-last {
+    box-shadow:
+        0 0 0 2px rgba(245, 196, 81, 0.9),
+        0 0 22px rgba(245, 196, 81, 0.5),
+        inset 0 10px 22px rgba(0, 0, 0, 0.62);
+    animation: mc-last 0.5s ease;
+}
+
+/* 坐标 / 数字 */
+.mc-pit__coord {
+    position: absolute;
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: calc(var(--mc-w) * 0.0155);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.45);
+    pointer-events: none;
+}
+
+.mc-pit__count {
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: calc(var(--mc-w) * 0.017);
+    font-weight: 800;
+    color: #ffe9b8;
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
+}
+
+.mc-pit__stones {
+    width: 66%;
+    max-height: 58%;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    gap: 2px;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+/* ---------------- 石子 ---------------- */
+.mc-dot {
+    width: calc(var(--mc-w) * 0.0135);
+    height: calc(var(--mc-w) * 0.0135);
+    border-radius: 50%;
+    background: radial-gradient(circle at 32% 30%, #fff0c4 0%, #f2c14e 58%, #d99b2b 100%);
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.55),
+        inset 0 -1px 1px rgba(120, 70, 10, 0.6);
+}
+
+/* 推荐坑（提示） */
+.mc-pit.is-hint::after {
+    content: '';
+    position: absolute;
+    inset: -4%;
+    border-radius: 50%;
+    border: 2px dashed rgba(245, 196, 81, 0.95);
+    box-shadow: 0 0 16px rgba(245, 196, 81, 0.5);
+    animation: mc-ring 1.3s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.mc-pit:focus-visible {
+    outline: 2px solid var(--brand-2);
+    outline-offset: 2px;
+}
+
+/* ---------------- 动画 ---------------- */
+@keyframes mc-breathe {
+    0%,
+    100% {
+        filter: drop-shadow(0 0 0 rgba(245, 196, 81, 0));
+    }
+    50% {
+        filter: drop-shadow(0 0 9px rgba(245, 196, 81, 0.55));
+    }
+}
+
+@keyframes mc-last {
+    0% {
+        transform: scale(1.14);
+        opacity: 0.6;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes mc-ring {
+    0%,
+    100% {
+        transform: scale(0.92);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.02);
+        opacity: 1;
+    }
+}

@@ -1,0 +1,88 @@
+/* ============================================================
+   曼卡拉页面（在共用对局样式之上做少量补充）
+   ============================================================ */
+
+.mc-page {
+    --board: min(760px, calc(100vw - 552px));
+    min-height: 100vh;
+}
+
+/* 让状态条与数据条跟棋盘同宽对齐 */
+.mc-page .gp-turnbar,
+.mc-page .gp-boardstats {
+    max-width: var(--board);
+}
+
+/* 状态条圆点：下方（玩家1）青紫、上方（玩家2）橙金 */
+.mc-page .gp-turnbar__dot[data-player='p1'] {
+    background: linear-gradient(135deg, #7c5cff, #22d3ee);
+    box-shadow: 0 0 12px rgba(124, 92, 255, 0.7);
+}
+
+.mc-page .gp-turnbar__dot[data-player='p2'] {
+    background: linear-gradient(135deg, #fb923c, #f5c451);
+    box-shadow: 0 0 12px rgba(251, 146, 60, 0.7);
+}
+
+/* 筹码配色（覆盖默认黑白圆点） */
+.gp-chip.mc-chip--p1 {
+    background: linear-gradient(135deg, #7c5cff, #22d3ee);
+    box-shadow: 0 0 10px rgba(124, 92, 255, 0.5);
+    border: none;
+}
+
+.gp-chip.mc-chip--p2 {
+    background: linear-gradient(135deg, #fb923c, #f5c451);
+    box-shadow: 0 0 10px rgba(251, 146, 60, 0.5);
+    border: none;
+}
+
+/* 局势进度条分段配色 */
+.mc-page .gp-dash__seg.mc-seg--p1 {
+    background: linear-gradient(90deg, #7c5cff, #22d3ee);
+}
+
+.mc-page .gp-dash__seg.mc-seg--p2 {
+    background: linear-gradient(90deg, #f5c451, #fb923c);
+}
+
+/* 棋谱标记 */
+.mc-log__tag {
+    margin-left: auto;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+}
+
+.mc-log__tag--cap {
+    color: var(--gold);
+}
+
+.mc-log__tag--extra {
+    color: var(--brand-2);
+}
+
+.mc-log__tag--cap + .mc-log__tag--extra {
+    margin-left: 8px;
+}
+
+/* 先手提示 */
+.mc-first-note {
+    margin-top: 10px;
+    font-size: 0.82rem;
+    color: var(--text-3);
+    line-height: 1.6;
+}
+
+@media (max-width: 1080px) {
+    .mc-page {
+        --board: min(760px, calc(100vw - 152px));
+    }
+}
+
+@media (max-width: 760px) {
+    .mc-page {
+        --board: min(760px, calc(100vw - 96px));
+    }
+}

@@ -82,8 +82,8 @@ export const GAMES = [
         mark: '播',
         color: '#fb923c',
         description: '古老的播种式棋类游戏，把棋子一粒粒送进自己的宝库。',
-        path: null,
-        playable: false,
+        path: '/home/mancala',
+        playable: true,
         accent: 'orange',
         meta: ['2 人', '10 分钟', '策略']
     },
