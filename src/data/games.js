@@ -94,8 +94,8 @@ export const GAMES = [
         mark: '超',
         color: '#818cf8',
         description: '九个井字棋嵌套成一个大棋盘，一步棋决定对手下一步的战场。',
-        path: null,
-        playable: false,
+        path: '/home/super-tictactoe',
+        playable: true,
         accent: 'indigo',
         meta: ['2 人', '15 分钟', '烧脑']
     }

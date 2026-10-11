@@ -1,0 +1,87 @@
+/* ============================================================
+   超级井字棋页面（在共用对局样式之上做少量补充）
+   ============================================================ */
+
+.st-page {
+    --board: min(560px, calc(100vw - 190px));
+    min-height: 100vh;
+}
+
+/* 让状态条与数据条跟棋盘同宽对齐 */
+.st-page .gp-turnbar,
+.st-page .gp-boardstats {
+    max-width: var(--board);
+}
+
+.st-page .gp-stage__hint {
+    max-width: calc(var(--board) + 40px);
+}
+
+/* 状态栏中的「自由落子」提示 */
+.st-free-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    border-radius: var(--r-full);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #ffdf9a;
+    background: rgba(245, 196, 81, 0.16);
+    border: 1px solid rgba(245, 196, 81, 0.36);
+    white-space: nowrap;
+}
+
+/* 先手说明 */
+.st-first-note {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--text-3);
+}
+
+/* 比分板补充说明 */
+.st-score-note {
+    margin-top: 12px;
+    font-size: 0.78rem;
+    line-height: 1.6;
+    color: var(--text-3);
+}
+
+/* 棋谱标签 */
+.st-log__tag {
+    margin-left: auto;
+    padding: 2px 9px;
+    border-radius: var(--r-full);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-2);
+    background: var(--surface-2);
+    border: 1px solid var(--stroke-1);
+    flex-shrink: 0;
+}
+
+.st-log__tag--won {
+    color: #ffdf9a;
+    background: rgba(245, 196, 81, 0.16);
+    border-color: rgba(245, 196, 81, 0.34);
+}
+
+.st-log__tag + .st-log__tag {
+    margin-left: 6px;
+}
+
+@media (max-width: 1080px) {
+    .st-page {
+        --board: min(560px, calc(100vw - 152px));
+    }
+}
+
+@media (max-width: 760px) {
+    .st-page {
+        --board: min(560px, calc(100vw - 120px));
+    }
+    .st-page .gp-stage__hint {
+        max-width: 100%;
+    }
+}
