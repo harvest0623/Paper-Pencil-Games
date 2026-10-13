@@ -123,6 +123,33 @@
     gap: 24px;
 }
 
+/* 街机小游戏区块：更紧凑的卡片，与主游戏墙区分 */
+.arcade-section {
+    scroll-margin-top: 90px;
+}
+
+.games-grid--mini {
+    grid-template-columns: repeat(auto-fill, minmax(238px, 1fr));
+    gap: 20px;
+}
+
+.games-grid--mini .game-card__preview {
+    height: 132px;
+}
+
+.games-grid--mini .game-card__preview .pv {
+    width: 112px;
+    height: 112px;
+}
+
+.games-grid--mini .game-card__body {
+    padding: 16px 8px 8px;
+}
+
+.games-grid--mini .game-card__desc {
+    font-size: 0.86rem;
+}
+
 .game-card-link {
     display: block;
     text-decoration: none;
@@ -181,6 +208,24 @@
 }
 .accent-indigo {
     --accent: #818cf8;
+}
+.accent-red {
+    --accent: #ef4444;
+}
+.accent-blue {
+    --accent: #60a5fa;
+}
+.accent-sky {
+    --accent: #38bdf8;
+}
+.accent-lime {
+    --accent: #a3e635;
+}
+.accent-teal {
+    --accent: #2dd4bf;
+}
+.accent-fuchsia {
+    --accent: #e879f9;
 }
 
 /* 预览区 */
@@ -526,6 +571,874 @@
     color: #22d3ee;
     font-size: 0.85rem;
     font-weight: 700;
+}
+
+/* 四子棋 */
+.pv--connect4 {
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 4px;
+    background: linear-gradient(158deg, #1d4ed8, #0b1e52);
+    border-radius: 12px;
+    padding: 7px;
+}
+
+.pv--connect4 .pv-cell {
+    border-radius: 50%;
+    background: rgba(6, 10, 25, 0.55);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.pv--connect4 .pv-disc--r {
+    background: radial-gradient(circle at 32% 28%, #fca5a5, #dc2626);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+}
+
+.pv--connect4 .pv-disc--y {
+    background: radial-gradient(circle at 32% 28%, #fde68a, #f59e0b);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+}
+
+/* 点格棋 */
+.pv--dots {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    background: rgba(96, 165, 250, 0.1);
+    border-radius: 12px;
+    padding: 11px;
+}
+
+.pv--dots .pv-cell {
+    border-radius: 5px;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+}
+
+.pv--dots .pv-cell.is-a {
+    background: linear-gradient(158deg, rgba(96, 165, 250, 0.6), rgba(96, 165, 250, 0.28));
+    box-shadow: inset 0 0 0 1px rgba(96, 165, 250, 0.9);
+}
+
+.pv--dots .pv-cell.is-b {
+    background: linear-gradient(158deg, rgba(34, 211, 238, 0.55), rgba(34, 211, 238, 0.25));
+    box-shadow: inset 0 0 0 1px rgba(34, 211, 238, 0.9);
+}
+
+/* 海战棋 */
+.pv--battleship {
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 3px;
+    background: linear-gradient(158deg, #1e3a8a, #0c1a3a);
+    border-radius: 12px;
+    padding: 7px;
+}
+
+.pv--battleship .pv-cell {
+    border-radius: 3px;
+    background: rgba(56, 189, 248, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.18);
+}
+
+.pv--battleship .pv-s {
+    background: linear-gradient(158deg, rgba(148, 163, 184, 0.95), rgba(100, 116, 139, 0.9));
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+}
+
+.pv--battleship .pv-h {
+    background: rgba(239, 68, 68, 0.35);
+    box-shadow: inset 0 0 0 1px rgba(239, 68, 68, 0.9);
+    color: #fecaca;
+    font-size: 0.62rem;
+    font-weight: 800;
+}
+
+.pv--battleship .pv-h::after {
+    content: '✕';
+}
+
+.pv--battleship .pv-m::after {
+    content: '';
+    width: 34%;
+    height: 34%;
+    border-radius: 50%;
+    background: rgba(226, 232, 240, 0.55);
+}
+
+/* 九子棋 */
+.pv--morris {
+    position: relative;
+    background: rgba(163, 230, 53, 0.08);
+    border-radius: 12px;
+}
+
+.pv-ring {
+    position: absolute;
+    border: 2px solid rgba(163, 230, 53, 0.55);
+    border-radius: 4px;
+}
+
+.pv-ring--1 {
+    inset: 12%;
+}
+.pv-ring--2 {
+    inset: 28%;
+}
+.pv-ring--3 {
+    inset: 44%;
+}
+
+.pv-stone {
+    position: absolute;
+    width: 13%;
+    height: 13%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 32% 28%, #67e8f9, #0891b2);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
+    transform: translate(-50%, -50%);
+}
+
+.pv-stone--1 {
+    top: 12%;
+    left: 12%;
+}
+.pv-stone--2 {
+    top: 12%;
+    left: 88%;
+}
+.pv-stone--3 {
+    top: 44%;
+    left: 44%;
+}
+
+.pv-stone--b {
+    background: radial-gradient(circle at 32% 28%, #f0abfc, #a21caf);
+}
+
+/* 数织 */
+.pv--nonogram {
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 3px;
+    background: rgba(192, 132, 252, 0.1);
+    border-radius: 12px;
+    padding: 8px;
+}
+
+.pv--nonogram .pv-cell {
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.pv--nonogram .pv-fill {
+    background: linear-gradient(158deg, rgba(192, 132, 252, 0.85), rgba(147, 51, 234, 0.6));
+    box-shadow: inset 0 0 0 1px rgba(216, 180, 254, 0.6);
+}
+
+/* 数和 */
+.pv--kakuro {
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 3px;
+    background: rgba(45, 212, 191, 0.1);
+    border-radius: 12px;
+    padding: 8px;
+}
+
+.pv--kakuro .pv-cell {
+    border-radius: 3px;
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: #5eead4;
+}
+
+.pv--kakuro .pv-block {
+    background: linear-gradient(158deg, #0f766e, #134e4a);
+    box-shadow: inset 0 0 0 1px rgba(45, 212, 191, 0.3);
+}
+
+.pv--kakuro .pv-numcell {
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* 数回 */
+.pv--slither {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    padding: 11px;
+    background: rgba(52, 211, 153, 0.1);
+    border-radius: 12px;
+}
+
+.pv--slither .pv-node {
+    position: relative;
+}
+
+.pv--slither .pv-node::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(226, 232, 240, 0.75);
+    transform: translate(-50%, -50%);
+}
+
+.pv--slither .pv-loop {
+    position: absolute;
+    inset: 17%;
+    border: 3px solid #34d399;
+    border-radius: 8px;
+    box-shadow: 0 0 12px rgba(52, 211, 153, 0.5);
+}
+
+/* 2048 */
+.pv--2048 {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 5px;
+    background: rgba(251, 191, 36, 0.1);
+    border-radius: 12px;
+    padding: 8px;
+}
+
+.pv--2048 .pv-cell {
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    font-size: 0.6rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+.pv--2048 .pv-t2 {
+    background: rgba(148, 163, 184, 0.4);
+}
+.pv--2048 .pv-t4 {
+    background: rgba(148, 163, 184, 0.58);
+}
+.pv--2048 .pv-t8 {
+    background: rgba(251, 146, 60, 0.78);
+    color: #3b1d05;
+}
+.pv--2048 .pv-t16 {
+    background: rgba(249, 115, 22, 0.88);
+    color: #3b1d05;
+}
+.pv--2048 .pv-t32 {
+    background: rgba(239, 68, 68, 0.85);
+}
+.pv--2048 .pv-t64 {
+    background: rgba(220, 38, 38, 0.92);
+}
+.pv--2048 .pv-t128 {
+    background: rgba(234, 179, 8, 0.95);
+    color: #3b1d05;
+    font-size: 0.52rem;
+}
+
+/* 推箱子 */
+.pv--sokoban {
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    gap: 2px;
+    background: rgba(251, 113, 133, 0.1);
+    border-radius: 12px;
+    padding: 7px;
+}
+
+.pv--sokoban .pv-cell {
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.pv--sokoban .pv-wall {
+    background: linear-gradient(158deg, #475569, #1e293b);
+    box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.35);
+}
+
+.pv--sokoban .pv-box {
+    background: linear-gradient(158deg, #d97706, #92400e);
+    box-shadow: inset 0 0 0 1px rgba(253, 230, 138, 0.6);
+}
+
+.pv--sokoban .pv-goal {
+    background: rgba(251, 113, 133, 0.12);
+    box-shadow: inset 0 0 0 2px rgba(251, 113, 133, 0.9);
+}
+
+.pv--sokoban .pv-player {
+    border-radius: 50%;
+    background: radial-gradient(circle at 32% 28%, #a5f3fc, #0891b2);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+}
+
+/* 跳棋 */
+.pv--checkers {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 5px;
+    background: rgba(232, 121, 249, 0.1);
+    border-radius: 12px;
+    padding: 9px;
+}
+
+.pv--checkers .pv-cell {
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.pv--checkers .pv-peg {
+    background: radial-gradient(circle at 32% 28%, #a5f3fc, #0891b2);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+}
+
+.pv--checkers .pv-peg--b {
+    background: radial-gradient(circle at 32% 28%, #f5d0fe, #c026d3);
+}
+
+/* 西洋跳棋 */
+.pv--draughts {
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    gap: 2px;
+    background: linear-gradient(158deg, #78350f, #451a03);
+    border-radius: 12px;
+    padding: 7px;
+}
+
+.pv--draughts .pv-cell {
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.pv--draughts .pv-cell:nth-child(even) {
+    background: rgba(255, 255, 255, 0.16);
+}
+
+.pv--draughts .pv-piece {
+    border-radius: 50%;
+    background: radial-gradient(circle at 32% 28%, #fff, #cbd5e1);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
+.pv--draughts .pv-piece--b {
+    background: radial-gradient(circle at 32% 28%, #64748b, #0f172a);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+}
+
+/* 暗棋 */
+.pv--banqi {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 5px;
+    background: rgba(248, 113, 113, 0.1);
+    border-radius: 12px;
+    padding: 9px;
+}
+
+.pv--banqi .pv-cell {
+    border-radius: 5px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.pv--banqi .pv-tile-back {
+    background: linear-gradient(158deg, #7f1d1d, #450a0a);
+    box-shadow: inset 0 0 0 1px rgba(248, 113, 113, 0.4);
+}
+
+.pv--banqi .pv-tile-up {
+    background: linear-gradient(158deg, #fef3c7, #fde68a);
+    color: #7f1d1d;
+    box-shadow: inset 0 0 0 1px rgba(120, 53, 15, 0.4);
+}
+
+/* 蛇梯棋 */
+.pv--ladders {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 3px;
+    background: rgba(74, 222, 128, 0.1);
+    border-radius: 12px;
+    padding: 8px;
+}
+
+.pv--ladders .pv-cell {
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 0.58rem;
+    font-weight: 700;
+    color: rgba(226, 232, 240, 0.7);
+}
+
+.pv--ladders .pv-ladder {
+    position: absolute;
+    left: 22%;
+    bottom: 20%;
+    width: 44%;
+    height: 5px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #4ade80, #22c55e);
+    transform: rotate(-38deg);
+    box-shadow: 0 0 8px rgba(74, 222, 128, 0.5);
+}
+
+.pv--ladders .pv-snake-bar {
+    position: absolute;
+    right: 16%;
+    top: 24%;
+    width: 42%;
+    height: 5px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #f87171, #dc2626);
+    transform: rotate(34deg);
+    box-shadow: 0 0 8px rgba(248, 113, 113, 0.5);
+}
+
+/* 摩天楼 */
+.pv--skyscrapers {
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 3px;
+    background: rgba(34, 211, 238, 0.1);
+    border-radius: 12px;
+    padding: 8px;
+}
+
+.pv--skyscrapers .pv-cell {
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.04);
+    font-size: 0.62rem;
+    font-weight: 800;
+}
+
+.pv--skyscrapers .pv-tower {
+    background: linear-gradient(180deg, rgba(34, 211, 238, 0.85), rgba(14, 116, 144, 0.7));
+    color: #062a33;
+    box-shadow: inset 0 0 0 1px rgba(165, 243, 252, 0.5);
+}
+
+/* 数桥 */
+.pv--hashi {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    padding: 12px;
+    background: rgba(45, 212, 191, 0.1);
+    border-radius: 12px;
+}
+
+.pv--hashi .pv-island {
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    font-size: 0.62rem;
+    font-weight: 800;
+}
+
+.pv--hashi .pv-island.is-num {
+    width: 74%;
+    height: 74%;
+    margin: auto;
+    background: linear-gradient(158deg, rgba(45, 212, 191, 0.85), rgba(13, 148, 136, 0.7));
+    color: #04241f;
+    box-shadow: inset 0 0 0 1px rgba(153, 246, 228, 0.6);
+}
+
+.pv--hashi .pv-bridge {
+    position: absolute;
+    background: rgba(153, 246, 228, 0.85);
+    border-radius: 3px;
+}
+
+.pv--hashi .pv-bridge--h {
+    top: 50%;
+    left: 24%;
+    width: 52%;
+    height: 4px;
+    transform: translateY(-50%);
+}
+
+.pv--hashi .pv-bridge--v {
+    left: 50%;
+    top: 24%;
+    height: 52%;
+    width: 4px;
+    transform: translateX(-50%);
+}
+
+/* 汉诺塔 */
+.pv--hanoi {
+    position: relative;
+    background: rgba(167, 139, 250, 0.1);
+    border-radius: 12px;
+}
+
+.pv--hanoi .pv-base {
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    bottom: 16%;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(196, 181, 253, 0.85);
+}
+
+.pv--hanoi .pv-rod {
+    position: absolute;
+    bottom: 18%;
+    width: 4px;
+    height: 52%;
+    border-radius: 2px;
+    background: rgba(196, 181, 253, 0.6);
+    transform: translateX(-50%);
+}
+
+.pv--hanoi .pv-rod--1 {
+    left: 30%;
+}
+.pv--hanoi .pv-rod--2 {
+    left: 50%;
+}
+.pv--hanoi .pv-rod--3 {
+    left: 70%;
+}
+
+.pv--hanoi .pv-disk {
+    position: absolute;
+    left: 30%;
+    transform: translateX(-50%);
+    height: 9px;
+    border-radius: 3px;
+}
+
+.pv--hanoi .pv-disk--a {
+    bottom: 22%;
+    width: 30%;
+    background: linear-gradient(90deg, #c4b5fd, #8b5cf6);
+}
+
+.pv--hanoi .pv-disk--b {
+    bottom: 32%;
+    width: 22%;
+    background: linear-gradient(90deg, #a5f3fc, #06b6d4);
+}
+
+.pv--hanoi .pv-disk--c {
+    bottom: 42%;
+    width: 14%;
+    background: linear-gradient(90deg, #fbcfe8, #ec4899);
+}
+
+/* 七巧板 */
+.pv--tangram {
+    position: relative;
+    background: rgba(251, 146, 60, 0.1);
+    border-radius: 12px;
+}
+
+.pv--tangram .pv-tg {
+    position: absolute;
+    inset: 14%;
+}
+
+.pv--tangram .pv-tg--1 {
+    clip-path: polygon(0 0, 100% 0, 0 100%);
+    background: linear-gradient(158deg, #fb923c, #ea580c);
+}
+
+.pv--tangram .pv-tg--2 {
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    background: linear-gradient(158deg, #fbbf24, #d97706);
+}
+
+.pv--tangram .pv-tg--3 {
+    inset: 14% 14% 46% 46%;
+    clip-path: polygon(0 100%, 0 0, 100% 100%);
+    background: linear-gradient(158deg, #f472b6, #db2777);
+}
+
+.pv--tangram .pv-tg--4 {
+    inset: 40% 40% 40% 40%;
+    background: linear-gradient(158deg, #c084fc, #9333ea);
+}
+
+.pv--tangram .pv-tg--5 {
+    inset: 52% 46% 26% 30%;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    background: linear-gradient(158deg, #22d3ee, #0891b2);
+}
+
+.pv--tangram .pv-tg--6 {
+    inset: 26% 30% 52% 46%;
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+    background: linear-gradient(158deg, #4ade80, #16a34a);
+}
+
+/* 迷宫 */
+.pv--maze {
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(7, 1fr);
+    gap: 1px;
+    background: rgba(148, 163, 184, 0.12);
+    border-radius: 10px;
+    padding: 6px;
+}
+
+.pv--maze .pv-cell {
+    border-radius: 1px;
+}
+
+.pv--maze .pv-wall {
+    background: linear-gradient(158deg, rgba(148, 163, 184, 0.75), rgba(71, 85, 105, 0.85));
+}
+
+.pv--maze .pv-path {
+    background: rgba(226, 232, 240, 0.07);
+}
+
+/* 贪吃蛇 */
+.pv--snake {
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    gap: 3px;
+    background: rgba(74, 222, 128, 0.12);
+    border-radius: 12px;
+    padding: 8px;
+}
+
+.pv--snake .pv-cell {
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.pv--snake .pv-body {
+    background: linear-gradient(158deg, #4ade80, #16a34a);
+    box-shadow: inset 0 0 0 1px rgba(187, 247, 208, 0.4);
+}
+
+.pv--snake .pv-body.is-head {
+    background: linear-gradient(158deg, #86efac, #22c55e);
+    box-shadow: 0 0 8px rgba(74, 222, 128, 0.7);
+}
+
+.pv--snake .pv-food {
+    border-radius: 50%;
+    background: radial-gradient(circle at 34% 30%, #fecaca, #ef4444);
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+}
+
+/* 俄罗斯方块 */
+.pv--tetris {
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    gap: 2px;
+    background: rgba(34, 211, 238, 0.1);
+    border-radius: 12px;
+    padding: 8px;
+}
+
+.pv--tetris .pv-cell {
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.pv--tetris .pv-block {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+
+.pv--tetris .pv-block--p {
+    background: linear-gradient(158deg, #c084fc, #7c3aed);
+}
+
+.pv--tetris .pv-block--c {
+    background: linear-gradient(158deg, #67e8f9, #0891b2);
+}
+
+.pv--tetris .pv-block--y {
+    background: linear-gradient(158deg, #fde68a, #d97706);
+}
+
+/* 打砖块 */
+.pv--breakout {
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(4, 1fr) 1.7fr 1fr;
+    gap: 3px;
+    background: rgba(251, 146, 60, 0.1);
+    border-radius: 12px;
+    padding: 8px;
+}
+
+.pv--breakout .pv-brick {
+    border-radius: 3px;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+}
+
+.pv--breakout .pv-brick--a {
+    background: linear-gradient(158deg, #fb923c, #ea580c);
+}
+
+.pv--breakout .pv-brick--b {
+    background: linear-gradient(158deg, #fbbf24, #d97706);
+}
+
+.pv--breakout .pv-brick--c {
+    background: linear-gradient(158deg, #f472b6, #db2777);
+}
+
+.pv--breakout .pv-brick.is-hit {
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.pv--breakout .pv-paddle {
+    grid-column: 2 / 5;
+    grid-row: 6;
+    align-self: end;
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #fdba74, #f97316);
+    box-shadow: 0 0 10px rgba(251, 146, 60, 0.6);
+}
+
+.pv--breakout .pv-ball {
+    grid-column: 4;
+    grid-row: 5;
+    align-self: center;
+    justify-self: center;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 34% 30%, #fff, #e2e8f0);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+}
+
+/* 乒乓 */
+.pv--pong {
+    position: relative;
+    background: linear-gradient(158deg, #1e1b4b, #0f0d2b);
+    border-radius: 12px;
+}
+
+.pv--pong .pv-pong__net {
+    position: absolute;
+    left: 50%;
+    top: 12%;
+    height: 76%;
+    border-left: 2px dashed rgba(129, 140, 248, 0.55);
+    transform: translateX(-50%);
+}
+
+.pv--pong .pv-pong__paddle {
+    position: absolute;
+    width: 6px;
+    height: 34%;
+    border-radius: 3px;
+    background: linear-gradient(180deg, #a5b4fc, #6366f1);
+    box-shadow: 0 0 10px rgba(129, 140, 248, 0.6);
+}
+
+.pv--pong .pv-pong__paddle--l {
+    left: 14%;
+    top: 33%;
+}
+
+.pv--pong .pv-pong__paddle--r {
+    right: 14%;
+    top: 46%;
+}
+
+.pv--pong .pv-pong__ball {
+    position: absolute;
+    left: 52%;
+    top: 40%;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 34% 30%, #fff, #c7d2fe);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.75);
+}
+
+/* 记忆翻牌 */
+.pv--memory {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 5px;
+    background: rgba(192, 132, 252, 0.1);
+    border-radius: 12px;
+    padding: 9px;
+}
+
+.pv--memory .pv-cell {
+    border-radius: 5px;
+    font-size: 0.74rem;
+    font-weight: 800;
+}
+
+.pv--memory .pv-back {
+    background: linear-gradient(158deg, rgba(124, 92, 255, 0.55), rgba(76, 29, 149, 0.6));
+    box-shadow: inset 0 0 0 1px rgba(192, 132, 252, 0.35);
+}
+
+.pv--memory .pv-face {
+    background: linear-gradient(158deg, #f5f3ff, #ddd6fe);
+    color: #7c3aed;
+    box-shadow: inset 0 0 0 1px rgba(124, 58, 237, 0.35);
+}
+
+/* 连连看 */
+.pv--onet {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 4px;
+    background: rgba(244, 114, 182, 0.1);
+    border-radius: 12px;
+    padding: 9px;
+}
+
+.pv--onet .pv-cell {
+    border-radius: 5px;
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.pv--onet .pv-tile {
+    background: linear-gradient(158deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
+    box-shadow: inset 0 0 0 1px rgba(244, 114, 182, 0.35);
+    color: #fbcfe8;
+}
+
+.pv--onet .pv-empty {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* 别踩白块 */
+.pv--piano {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 3px;
+    background: rgba(250, 204, 21, 0.1);
+    border-radius: 12px;
+    padding: 8px;
+}
+
+.pv--piano .pv-cell {
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.pv--piano .pv-black {
+    background: linear-gradient(180deg, #334155, #0f172a);
+    box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.4);
+}
+
+.pv--piano .pv-black.is-hit {
+    background: linear-gradient(180deg, #fde68a, #f59e0b);
+    box-shadow: 0 0 10px rgba(250, 204, 21, 0.7);
 }
 
 /* ---------------- 为什么玩 ---------------- */
