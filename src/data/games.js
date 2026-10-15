@@ -107,7 +107,7 @@ export const GAMES = [
         color: '#ef4444',
         description: '轮流投下棋子，率先在横竖或斜向连成四子者获胜。看似简单，却暗藏先手优势。',
         path: '/home/connect-four',
-        playable: false,
+        playable: true,
         accent: 'red',
         meta: ['2 人', '5 分钟', '策略']
     },

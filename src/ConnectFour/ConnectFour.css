@@ -1,0 +1,66 @@
+/* ============================================================
+   四子棋页面
+   ============================================================ */
+
+.cf-page {
+    min-height: 100vh;
+}
+
+/* 棋盘尺寸跟随视口，避免窄屏溢出 */
+.cf-page {
+    --board: min(672px, calc(100vw - 190px));
+}
+
+.cf-page .gp-turnbar,
+.cf-page .gp-boardstats {
+    max-width: var(--board);
+}
+
+.cf-page .gp-stage__hint {
+    max-width: calc(var(--board) + 60px);
+}
+
+/* 先手说明 */
+.cf-first-note {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--text-3);
+}
+
+/* 棋谱中的制胜标记 */
+.cf-log__tag {
+    margin-left: auto;
+    padding: 2px 9px;
+    border-radius: var(--r-full);
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: #ffdf9a;
+    background: rgba(245, 196, 81, 0.16);
+    border: 1px solid rgba(245, 196, 81, 0.34);
+}
+
+/* 局势条：红 / 黄两色 */
+.gp-dash__seg--red {
+    background: linear-gradient(90deg, #f87171, #dc2626);
+}
+
+.gp-dash__seg--yellow {
+    background: linear-gradient(90deg, #fde68a, #f59e0b);
+}
+
+/* 672px 大盘在双栏布局下需要更宽的容器，1180px 以下提前改为单栏 */
+@media (max-width: 1180px) {
+    .cf-page .gp-stage__inner {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .cf-page {
+        --board: calc(100vw - 150px);
+    }
+    .cf-page .gp-stage__hint {
+        max-width: 100%;
+    }
+}

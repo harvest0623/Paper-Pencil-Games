@@ -8,6 +8,7 @@ import HuarongdaoGame from './Huarongdao/HuarongdaoGame';
 import MinesweeperGame from './Minesweeper/MinesweeperGame';
 import MancalaGame from './Mancala/MancalaGame';
 import SuperTicTacToeGame from './SuperTicTacToe/SuperTicTacToeGame';
+import ConnectFourGame from './ConnectFour/ConnectFourGame';
 import ScrollToTop from './components/ScrollToTop';
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
                 <Route path="/home/minesweeper" element={<MinesweeperGame />} />
                 <Route path="/home/mancala" element={<MancalaGame />} />
                 <Route path="/home/super-tictactoe" element={<SuperTicTacToeGame />} />
+                <Route path="/home/connect-four" element={<ConnectFourGame />} />
             </Routes>
         </Router>
     );

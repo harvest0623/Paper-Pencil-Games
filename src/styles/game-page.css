@@ -102,6 +102,16 @@
     box-shadow: 0 0 12px rgba(34, 211, 238, 0.75);
 }
 
+.gp-turnbar__dot[data-player='red'] {
+    background: radial-gradient(circle at 30% 30%, #fca5a5, #dc2626);
+    box-shadow: 0 0 12px rgba(220, 38, 38, 0.75);
+}
+
+.gp-turnbar__dot[data-player='yellow'] {
+    background: radial-gradient(circle at 30% 30%, #fde68a, #f59e0b);
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.75);
+}
+
 .gp-turnbar__spinner {
     width: 14px;
     height: 14px;
@@ -278,6 +288,19 @@
 .gp-chip--white {
     background: radial-gradient(circle at 30% 30%, #ffffff, #c5ccd9);
     border: 1px solid rgba(255, 255, 255, 0.75);
+}
+
+/* 四子棋筹码 */
+.gp-chip--red {
+    background: radial-gradient(circle at 30% 30%, #fca5a5, #dc2626);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    box-shadow: 0 0 12px rgba(220, 38, 38, 0.45);
+}
+
+.gp-chip--yellow {
+    background: radial-gradient(circle at 30% 30%, #fde68a, #f59e0b);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.45);
 }
 
 /* X / O 标记筹码（井字棋） */

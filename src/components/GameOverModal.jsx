@@ -3,15 +3,24 @@ function GameOverModal({ open, result, names, onRestart, onClose, variant = 'sto
 
     const { tone, title, sub, scores, winnerSide } = result;
 
-    /* 胜方颜色标注：棋子类显示「黑棋/白棋」，井字棋显示「X/O」 */
+    const isMark = variant === 'mark';
+    const isDisc = variant === 'disc';
+
+    /* 胜方颜色标注：棋子类显示「黑棋/白棋」，井字棋显示「X/O」，四子棋显示「红棋/黄棋」 */
     const sideLabel = winnerSide
-        ? variant === 'mark'
+        ? isMark
             ? `${winnerSide === 'x' ? 'X' : 'O'} 获胜`
-            : `${winnerSide === 'black' ? '黑棋' : '白棋'}获胜`
+            : isDisc
+              ? `${winnerSide === 'red' ? '红棋' : '黄棋'}获胜`
+              : `${winnerSide === 'black' ? '黑棋' : '白棋'}获胜`
         : null;
 
+    /* 左右两侧的筹码标识 */
+    const leftSide = isMark ? 'x' : isDisc ? 'red' : 'black';
+    const rightSide = isMark ? 'o' : isDisc ? 'yellow' : 'white';
+
     const chip = (side) =>
-        variant === 'mark' ? (
+        isMark ? (
             <span className={`gp-chip gp-chip--mark gp-chip--${side}`}>
                 {side === 'x' ? 'X' : 'O'}
             </span>
@@ -37,13 +46,13 @@ function GameOverModal({ open, result, names, onRestart, onClose, variant = 'sto
 
                 <div className="gp-modal__score">
                     <div className="gp-modal__score-item">
-                        {chip(variant === 'mark' ? 'x' : 'black')}
+                        {chip(leftSide)}
                         <span className="gp-modal__name">{names.black}</span>
                         <strong>{scores.black}</strong>
                     </div>
                     <span className="gp-modal__vs">:</span>
                     <div className="gp-modal__score-item">
-                        {chip(variant === 'mark' ? 'o' : 'white')}
+                        {chip(rightSide)}
                         <span className="gp-modal__name">{names.white}</span>
                         <strong>{scores.white}</strong>
                     </div>
