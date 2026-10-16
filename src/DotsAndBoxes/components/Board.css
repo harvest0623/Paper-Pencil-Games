@@ -1,0 +1,279 @@
+/* ============================================================
+   点格棋棋盘：点阵 + 可点击的线 + 淡入的占领方格
+   5 = BOXES，与 gameLogic.js 中的 DOTS - 1 保持一致
+   ============================================================ */
+
+.db-wrap {
+    --cell: min(88px, calc((100vw - 230px) / 5));
+    --dot: 11px;
+    --line: 3px;
+    --hit: 16px;
+    --boxpad: 5px;
+    --coord: 30px;
+    --p1: #60a5fa;
+    --p2: #f87171;
+    position: relative;
+    padding: var(--coord);
+    border-radius: 24px;
+    border: 1px solid var(--stroke-1);
+    background:
+        radial-gradient(120% 130% at 0% 0%, rgba(96, 165, 250, 0.16), transparent 60%),
+        radial-gradient(120% 130% at 100% 100%, rgba(248, 113, 113, 0.13), transparent 60%),
+        linear-gradient(160deg, #151c2c, #0a0e18);
+    box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    user-select: none;
+}
+
+.db-board {
+    position: relative;
+    width: calc(5 * var(--cell));
+    height: calc(5 * var(--cell));
+}
+
+/* ---------------- 坐标 ---------------- */
+.db-coord {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--text-3);
+    pointer-events: none;
+}
+
+.db-coord--top {
+    top: 0;
+    height: var(--coord);
+    justify-content: center;
+    transform: translateX(-50%);
+}
+
+.db-coord--left {
+    left: 0;
+    width: var(--coord);
+    justify-content: flex-end;
+    padding-right: 7px;
+    transform: translateY(-50%);
+}
+
+/* ---------------- 线 ---------------- */
+.db-line {
+    position: absolute;
+    z-index: 2;
+    display: block;
+    padding: 0;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    color: inherit;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.db-line:disabled {
+    cursor: default;
+    pointer-events: none;
+}
+
+.db-line--h {
+    width: var(--cell);
+    height: var(--hit);
+    transform: translateY(-50%);
+}
+
+.db-line--v {
+    width: var(--hit);
+    height: var(--cell);
+    transform: translateX(-50%);
+}
+
+.db-line__bar {
+    position: absolute;
+    border-radius: var(--r-full);
+    background: rgba(255, 255, 255, 0.085);
+    transition: background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.db-line--h .db-line__bar {
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: var(--line);
+    transform: translateY(-50%);
+}
+
+.db-line--v .db-line__bar {
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: var(--line);
+    transform: translateX(-50%);
+}
+
+.db-line:focus-visible {
+    outline: none;
+}
+
+.db-line:focus-visible .db-line__bar {
+    outline: 2px solid var(--brand-2);
+    outline-offset: 1px;
+}
+
+/* 悬停预览：显示当前一方将要画出的线 */
+.db-wrap.is-live[data-cur='p1'] .db-line:not(:disabled):hover .db-line__bar {
+    background: var(--p1);
+    box-shadow: 0 0 12px rgba(96, 165, 250, 0.6);
+}
+
+.db-wrap.is-live[data-cur='p2'] .db-line:not(:disabled):hover .db-line__bar {
+    background: var(--p2);
+    box-shadow: 0 0 12px rgba(248, 113, 113, 0.6);
+}
+
+/* 已画出的线 */
+.db-line.is-drawn.db-line--p1 .db-line__bar {
+    background: var(--p1);
+    box-shadow: 0 0 10px rgba(96, 165, 250, 0.45);
+}
+
+.db-line.is-drawn.db-line--p2 .db-line__bar {
+    background: var(--p2);
+    box-shadow: 0 0 10px rgba(248, 113, 113, 0.45);
+}
+
+/* 最后一手：金色光晕 + 金色圆点 */
+.db-line.is-last .db-line__bar {
+    box-shadow: 0 0 16px rgba(245, 196, 81, 0.95);
+}
+
+.db-last {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid var(--gold);
+    background: rgba(11, 15, 26, 0.85);
+    box-shadow: 0 0 12px rgba(245, 196, 81, 0.9);
+    transform: translate(-50%, -50%);
+    animation: db-pop 0.35s ease;
+    z-index: 4;
+}
+
+/* 引擎推荐：金色虚线 */
+.db-line.is-hint::after {
+    content: '';
+    position: absolute;
+    z-index: 4;
+    border-color: var(--gold);
+    filter: drop-shadow(0 0 6px rgba(245, 196, 81, 0.85));
+    animation: db-hint 1.4s ease-in-out infinite;
+}
+
+.db-line--h.is-hint::after {
+    left: 2px;
+    right: 2px;
+    top: 50%;
+    border-top: 2px dashed var(--gold);
+    transform: translateY(-50%);
+}
+
+.db-line--v.is-hint::after {
+    top: 2px;
+    bottom: 2px;
+    left: 50%;
+    border-left: 2px dashed var(--gold);
+    transform: translateX(-50%);
+}
+
+/* ---------------- 点阵 ---------------- */
+.db-dot {
+    position: absolute;
+    z-index: 3;
+    width: var(--dot);
+    height: var(--dot);
+    border-radius: 50%;
+    background: radial-gradient(circle at 34% 30%, #ffffff, #b8c4d8);
+    box-shadow: 0 0 10px rgba(226, 232, 240, 0.4);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+/* ---------------- 占领的方格 ---------------- */
+.db-box {
+    position: absolute;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    animation: db-fill 0.42s ease;
+}
+
+.db-box--p1 {
+    background: rgba(96, 165, 250, 0.2);
+    box-shadow: inset 0 0 0 1px rgba(96, 165, 250, 0.42);
+}
+
+.db-box--p2 {
+    background: rgba(248, 113, 113, 0.18);
+    box-shadow: inset 0 0 0 1px rgba(248, 113, 113, 0.4);
+}
+
+.db-box__mark {
+    width: 34%;
+    height: 34%;
+}
+
+.db-box--p1 .db-box__mark {
+    border-radius: 50%;
+    background: radial-gradient(circle at 32% 30%, #bfdbfe, #3b82f6);
+    box-shadow: 0 0 12px rgba(96, 165, 250, 0.65);
+}
+
+.db-box--p2 .db-box__mark {
+    border-radius: 4px;
+    background: radial-gradient(circle at 32% 30%, #fecaca, #ef4444);
+    box-shadow: 0 0 12px rgba(248, 113, 113, 0.6);
+    transform: rotate(45deg);
+}
+
+@keyframes db-fill {
+    from {
+        opacity: 0;
+        transform: scale(1.14);
+    }
+}
+
+@keyframes db-pop {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.6);
+    }
+}
+
+@keyframes db-hint {
+    0%,
+    100% {
+        opacity: 0.55;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+@media (max-width: 760px) {
+    .db-wrap {
+        --cell: calc((100vw - 170px) / 5);
+        --coord: 22px;
+        --dot: 9px;
+        --hit: 14px;
+        --boxpad: 4px;
+        border-radius: 20px;
+    }
+
+    .db-coord {
+        font-size: 0.66rem;
+    }
+}

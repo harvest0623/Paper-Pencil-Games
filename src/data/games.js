@@ -119,7 +119,7 @@ export const GAMES = [
         color: '#60a5fa',
         description: '在点阵之间画线，围住一个方格就占领它。课本边角最经久不衰的纸上游戏。',
         path: '/home/dots-and-boxes',
-        playable: false,
+        playable: true,
         accent: 'blue',
         meta: ['2 人', '5 分钟', '策略']
     },

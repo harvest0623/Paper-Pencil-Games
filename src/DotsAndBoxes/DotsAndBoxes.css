@@ -1,0 +1,63 @@
+/* ============================================================
+   点格棋页面
+   ============================================================ */
+
+.dbx-page {
+    min-height: 100vh;
+    --board: min(500px, calc(100vw - 170px));
+}
+
+/* 提示条与棋盘统计跟随棋盘宽度 */
+.dbx-page .gp-turnbar,
+.dbx-page .gp-boardstats {
+    max-width: var(--board);
+}
+
+.dbx-page .gp-stage__hint {
+    max-width: calc(var(--board) + 60px);
+}
+
+/* 先手说明 */
+.dbx-first-note {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--text-3);
+}
+
+/* 棋谱中的吃格标记 */
+.dbx-log__tag {
+    margin-left: auto;
+    padding: 2px 9px;
+    border-radius: var(--r-full);
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: #ffdf9a;
+    background: rgba(245, 196, 81, 0.16);
+    border: 1px solid rgba(245, 196, 81, 0.34);
+}
+
+/* 局势条：蓝 / 红两色 */
+.gp-dash__seg--blue {
+    background: linear-gradient(90deg, #93c5fd, #2563eb);
+}
+
+.gp-dash__seg--red {
+    background: linear-gradient(90deg, #f87171, #dc2626);
+}
+
+/* 棋盘加坐标栏约 500px，1024px 以下提前改为单栏，避免横向溢出 */
+@media (max-width: 1024px) {
+    .dbx-page .gp-stage__inner {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .dbx-page {
+        --board: min(484px, calc(100vw - 126px));
+    }
+    .dbx-page .gp-stage__hint {
+        max-width: 100%;
+    }
+}

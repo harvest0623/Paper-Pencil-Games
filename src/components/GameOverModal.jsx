@@ -5,19 +5,22 @@ function GameOverModal({ open, result, names, onRestart, onClose, variant = 'sto
 
     const isMark = variant === 'mark';
     const isDisc = variant === 'disc';
+    const isBlueSide = variant === 'blue';
 
-    /* 胜方颜色标注：棋子类显示「黑棋/白棋」，井字棋显示「X/O」，四子棋显示「红棋/黄棋」 */
+    /* 胜方颜色标注：棋子类显示「黑棋/白棋」，井字棋显示「X/O」，四子棋显示「红棋/黄棋」，点格棋显示「蓝方/红方」 */
     const sideLabel = winnerSide
         ? isMark
             ? `${winnerSide === 'x' ? 'X' : 'O'} 获胜`
             : isDisc
               ? `${winnerSide === 'red' ? '红棋' : '黄棋'}获胜`
-              : `${winnerSide === 'black' ? '黑棋' : '白棋'}获胜`
+              : isBlueSide
+                ? `${winnerSide === 'blue' ? '蓝方' : '红方'}获胜`
+                : `${winnerSide === 'black' ? '黑棋' : '白棋'}获胜`
         : null;
 
     /* 左右两侧的筹码标识 */
-    const leftSide = isMark ? 'x' : isDisc ? 'red' : 'black';
-    const rightSide = isMark ? 'o' : isDisc ? 'yellow' : 'white';
+    const leftSide = isMark ? 'x' : isDisc ? 'red' : isBlueSide ? 'blue' : 'black';
+    const rightSide = isMark ? 'o' : isDisc ? 'yellow' : isBlueSide ? 'red' : 'white';
 
     const chip = (side) =>
         isMark ? (
