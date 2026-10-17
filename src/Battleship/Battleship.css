@@ -1,0 +1,310 @@
+/* ============================================================
+   海战棋页面
+   ============================================================ */
+
+.bsp-page {
+    min-height: 100vh;
+    /* 两块海域并排时的格子尺寸；单块布阵棋盘沿用同一尺寸 */
+    --bs-cell: clamp(22px, calc((100vw - 620px) / 20), 30px);
+    --bs-coord: 20px;
+}
+
+.bsp-page .gp-turnbar,
+.bsp-page .gp-boardstats,
+.bsp-page .gp-stage__hint {
+    max-width: 100%;
+}
+
+/* 两块海域并排 */
+.bs-pair {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-items: center;
+    align-items: start;
+    gap: 16px;
+    width: 100%;
+}
+
+/* ---------------- 布阵面板 ---------------- */
+.bsp-picks {
+    width: 100%;
+    padding: 14px 16px 16px;
+    border-radius: var(--r-lg);
+    border: 1px solid var(--stroke-1);
+    background: rgba(0, 0, 0, 0.22);
+}
+
+.bsp-picks__head {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    margin-bottom: 12px;
+}
+
+.bsp-picks__title {
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+.bsp-picks__note {
+    font-size: 0.76rem;
+    color: var(--text-3);
+}
+
+.bsp-picks__list {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.bsp-pick {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 10px 11px;
+    border-radius: var(--r-sm);
+    border: 1px solid var(--stroke-1);
+    background: rgba(255, 255, 255, 0.03);
+    font-family: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease,
+        opacity 0.16s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.bsp-pick:hover {
+    background: rgba(56, 189, 248, 0.08);
+    border-color: rgba(125, 211, 252, 0.42);
+}
+
+.bsp-pick.is-active {
+    background: rgba(245, 196, 81, 0.12);
+    border-color: rgba(245, 196, 81, 0.6);
+    box-shadow: 0 0 14px rgba(245, 196, 81, 0.18);
+}
+
+.bsp-pick.is-placed {
+    opacity: 0.52;
+}
+
+.bsp-pick__name {
+    font-size: 0.86rem;
+    font-weight: 800;
+}
+
+.bsp-pick__pips {
+    display: flex;
+    gap: 3px;
+}
+
+.bsp-pick__pips i {
+    width: 9px;
+    height: 9px;
+    border-radius: 3px;
+    background: linear-gradient(160deg, #7dd3fc, #0284c7);
+}
+
+.bsp-pick.is-active .bsp-pick__pips i {
+    background: linear-gradient(160deg, #ffe08a, #e0a326);
+}
+
+.bsp-pick__state {
+    font-size: 0.7rem;
+    color: var(--text-3);
+}
+
+.bsp-picks__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+/* ---------------- 侧栏补充样式 ---------------- */
+.bsp-first-note {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--text-3);
+}
+
+.bsp-notes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: var(--text-2);
+}
+
+.bsp-notes p {
+    margin: 0;
+}
+
+.bsp-fleet {
+    margin-bottom: 14px;
+}
+
+.bsp-fleet:last-child {
+    margin-bottom: 0;
+}
+
+.bsp-fleet__head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.bsp-fleet__name {
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.bsp-fleet__left {
+    margin-left: auto;
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: var(--text-2);
+}
+
+.bsp-fleet__list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.bsp-ship {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 9px;
+    border-radius: var(--r-sm);
+    border: 1px solid var(--stroke-1);
+    background: rgba(0, 0, 0, 0.2);
+    font-size: 0.78rem;
+}
+
+.bsp-ship__name {
+    font-weight: 700;
+}
+
+.bsp-ship__pips {
+    display: flex;
+    gap: 3px;
+    margin-left: auto;
+}
+
+.bsp-ship__pip {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.bsp-ship__pip.is-hit {
+    background: #ef4444;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.7);
+}
+
+.bsp-ship__state {
+    min-width: 30px;
+    font-size: 0.7rem;
+    color: var(--text-3);
+    text-align: right;
+}
+
+.bsp-ship.is-sunk {
+    border-color: rgba(248, 113, 113, 0.45);
+    background: rgba(153, 27, 27, 0.2);
+}
+
+.bsp-ship.is-sunk .bsp-ship__name {
+    color: #fca5a5;
+    text-decoration: line-through;
+}
+
+.bsp-ship.is-sunk .bsp-ship__state {
+    color: #fca5a5;
+}
+
+.bsp-ship.is-missing {
+    opacity: 0.5;
+}
+
+/* 棋谱中的命中标记 */
+.bsp-log__tag {
+    margin-left: auto;
+    padding: 2px 9px;
+    border-radius: var(--r-full);
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.bsp-log__tag.is-hit {
+    color: #ffdf9a;
+    background: rgba(245, 196, 81, 0.16);
+    border: 1px solid rgba(245, 196, 81, 0.34);
+}
+
+.bsp-log__tag.is-miss {
+    color: var(--text-3);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--stroke-1);
+}
+
+.bsp-log__tag.is-sunk {
+    color: #fecaca;
+    background: rgba(239, 68, 68, 0.18);
+    border: 1px solid rgba(248, 113, 113, 0.4);
+}
+
+/* 局势条：蓝 / 红两色 */
+.gp-dash__seg--blue {
+    background: linear-gradient(90deg, #93c5fd, #2563eb);
+}
+
+.gp-dash__seg--red {
+    background: linear-gradient(90deg, #f87171, #dc2626);
+}
+
+/* 两块海域并排需要约 750px，1080px 以下改为上下排布，避免横向溢出 */
+@media (max-width: 1080px) {
+    .bsp-page {
+        --bs-cell: min(30px, calc((100vw - 180px) / 10));
+    }
+    .bs-pair {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+    .bsp-picks__list {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .bsp-page {
+        --bs-cell: min(26px, calc((100vw - 150px) / 10));
+        --bs-coord: 16px;
+    }
+    .bsp-page .bs-board {
+        padding: 10px 10px 12px;
+        border-radius: 18px;
+    }
+    .bsp-picks {
+        padding: 12px 12px 14px;
+    }
+    .bsp-picks__list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}

@@ -1,0 +1,282 @@
+/* ============================================================
+   海战棋棋盘：10 x 10 海域 + 行列坐标 + 落弹标记
+   --bs-cell / --bs-coord 由页面 CSS 按断点覆盖
+   ============================================================ */
+
+.bs-board {
+    --bs-cell: 30px;
+    --bs-coord: 20px;
+    position: relative;
+    width: fit-content;
+    padding: 14px 14px 15px;
+    border-radius: 22px;
+    border: 1px solid var(--stroke-1);
+    background: linear-gradient(160deg, #141b2b, #0a0e18);
+    box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    user-select: none;
+}
+
+.bs-board--blue {
+    background:
+        radial-gradient(120% 130% at 0% 0%, rgba(56, 189, 248, 0.16), transparent 62%),
+        linear-gradient(160deg, #131a2a, #0a0e18);
+}
+
+.bs-board--red {
+    background:
+        radial-gradient(120% 130% at 100% 0%, rgba(248, 113, 113, 0.15), transparent 62%),
+        linear-gradient(160deg, #131a2a, #0a0e18);
+}
+
+.bs-board__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.bs-board__title {
+    margin: 0;
+    font-size: 0.94rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    color: var(--text-1);
+}
+
+.bs-board__badge {
+    margin-left: auto;
+    padding: 3px 10px;
+    border-radius: var(--r-full);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #dbeafe;
+    background: rgba(56, 189, 248, 0.14);
+    border: 1px solid rgba(56, 189, 248, 0.32);
+    white-space: nowrap;
+}
+
+.bs-board--red .bs-board__badge {
+    color: #fee2e2;
+    background: rgba(248, 113, 113, 0.14);
+    border-color: rgba(248, 113, 113, 0.32);
+}
+
+.bs-board__sub {
+    margin: 10px 0 0;
+    font-size: 0.78rem;
+    line-height: 1.6;
+    color: var(--text-3);
+}
+
+/* ---------------- 网格与坐标 ---------------- */
+.bs-grid {
+    display: grid;
+    grid-template-columns: var(--bs-coord) repeat(10, var(--bs-cell));
+    grid-template-rows: var(--bs-coord) repeat(10, var(--bs-cell));
+    gap: 2px;
+}
+
+.bs-coord {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--text-3);
+}
+
+/* ---------------- 格子 ---------------- */
+.bs-cell {
+    position: relative;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.028);
+    font-family: inherit;
+    color: inherit;
+    cursor: default;
+    transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.bs-cell:focus-visible {
+    outline: 2px solid var(--brand-2);
+    outline-offset: 1px;
+}
+
+.bs-cell__inner {
+    position: relative;
+    display: block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    transition: width 0.16s ease, height 0.16s ease, background 0.16s ease;
+}
+
+/* 可炮击的海域：悬停即瞄准 */
+.bs-grid.is-live .bs-cell:not(:disabled) {
+    cursor: crosshair;
+}
+
+.bs-grid.is-live .bs-cell:not(:disabled):hover {
+    background: rgba(245, 196, 81, 0.15);
+    border-color: rgba(245, 196, 81, 0.5);
+    box-shadow: 0 0 12px rgba(245, 196, 81, 0.32);
+}
+
+/* ---------------- 舰船 ---------------- */
+.bs-cell.is-ship {
+    background: rgba(56, 189, 248, 0.1);
+    border-color: rgba(56, 189, 248, 0.28);
+}
+
+.bs-cell.is-ship .bs-cell__inner {
+    width: 74%;
+    height: 74%;
+    border-radius: 5px;
+    background: linear-gradient(160deg, #7dd3fc, #0284c7);
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
+}
+
+.bs-board--red .bs-cell.is-ship {
+    background: rgba(248, 113, 113, 0.1);
+    border-color: rgba(248, 113, 113, 0.28);
+}
+
+.bs-board--red .bs-cell.is-ship .bs-cell__inner {
+    background: linear-gradient(160deg, #fca5a5, #dc2626);
+    box-shadow: 0 0 10px rgba(248, 113, 113, 0.35);
+}
+
+/* ---------------- 落弹 ---------------- */
+.bs-cell.is-miss .bs-cell__inner {
+    width: 6px;
+    height: 6px;
+    background: rgba(148, 163, 184, 0.8);
+}
+
+.bs-cell.is-hit .bs-cell__inner {
+    width: 9px;
+    height: 9px;
+    background: radial-gradient(circle at 34% 30%, #fed7d7, #ef4444);
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.85);
+    animation: bs-boom 0.32s ease;
+}
+
+.bs-cell.is-hit.is-ship .bs-cell__inner {
+    width: 66%;
+    height: 66%;
+    border-radius: 5px;
+    background: linear-gradient(160deg, #fca5a5, #b91c1c);
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.7);
+}
+
+/* 击沉：整格转为暗红并打叉 */
+.bs-cell.is-sunk {
+    background: rgba(153, 27, 27, 0.3);
+    border-color: rgba(248, 113, 113, 0.5);
+    box-shadow: inset 0 0 0 1px rgba(248, 113, 113, 0.25);
+}
+
+.bs-cell.is-sunk .bs-cell__inner {
+    width: 62%;
+    height: 62%;
+    border-radius: 5px;
+    background: linear-gradient(160deg, #7f1d1d, #3f0a0a);
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.35);
+}
+
+.bs-cell.is-sunk .bs-cell__inner::after {
+    content: '';
+    position: absolute;
+    inset: 10%;
+    background:
+        linear-gradient(
+            45deg,
+            transparent 44%,
+            rgba(254, 226, 226, 0.95) 46%,
+            rgba(254, 226, 226, 0.95) 54%,
+            transparent 56%
+        ),
+        linear-gradient(
+            -45deg,
+            transparent 44%,
+            rgba(254, 226, 226, 0.95) 46%,
+            rgba(254, 226, 226, 0.95) 54%,
+            transparent 56%
+        );
+}
+
+/* ---------------- 最后一炮 ---------------- */
+.bs-cell.is-last {
+    z-index: 2;
+    box-shadow: 0 0 0 2px rgba(245, 196, 81, 0.85), 0 0 16px rgba(245, 196, 81, 0.55);
+}
+
+.bs-cell.is-last::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 10px rgba(245, 196, 81, 0.95);
+    animation: bs-pop 0.35s ease;
+}
+
+/* ---------------- 引擎推荐：金色虚线 ---------------- */
+.bs-cell.is-hint {
+    background: rgba(245, 196, 81, 0.1);
+}
+
+.bs-cell.is-hint::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 6px;
+    border: 2px dashed var(--gold);
+    filter: drop-shadow(0 0 6px rgba(245, 196, 81, 0.8));
+    animation: bs-hint 1.4s ease-in-out infinite;
+}
+
+/* ---------------- 布阵预览 ---------------- */
+.bs-cell.is-preview {
+    background: rgba(56, 189, 248, 0.3);
+    border-color: rgba(125, 211, 252, 0.6);
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+}
+
+.bs-cell.is-preview-bad {
+    background: rgba(248, 113, 113, 0.26);
+    border-color: rgba(248, 113, 113, 0.6);
+}
+
+@keyframes bs-boom {
+    from {
+        opacity: 0;
+        transform: scale(0.4);
+    }
+}
+
+@keyframes bs-pop {
+    from {
+        opacity: 0;
+        transform: scale(1.8);
+    }
+}
+
+@keyframes bs-hint {
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
+}

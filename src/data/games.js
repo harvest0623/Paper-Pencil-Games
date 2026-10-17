@@ -131,7 +131,7 @@ export const GAMES = [
         color: '#38bdf8',
         description: '在网格上排布舰队并推测对手的船只位置，先击沉对方全部舰队的一方获胜。',
         path: '/home/battleship',
-        playable: false,
+        playable: true,
         accent: 'sky',
         meta: ['2 人', '10 分钟', '策略']
     },
