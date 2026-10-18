@@ -11,6 +11,7 @@ import SuperTicTacToeGame from './SuperTicTacToe/SuperTicTacToeGame';
 import ConnectFourGame from './ConnectFour/ConnectFourGame';
 import DotsAndBoxesGame from './DotsAndBoxes/DotsAndBoxesGame';
 import BattleshipGame from './Battleship/BattleshipGame';
+import NineMensMorrisGame from './NineMensMorris/NineMensMorrisGame';
 import ScrollToTop from './components/ScrollToTop';
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
                 <Route path="/home/connect-four" element={<ConnectFourGame />} />
                 <Route path="/home/dots-and-boxes" element={<DotsAndBoxesGame />} />
                 <Route path="/home/battleship" element={<BattleshipGame />} />
+                <Route path="/home/nine-mens-morris" element={<NineMensMorrisGame />} />
             </Routes>
         </Router>
     );

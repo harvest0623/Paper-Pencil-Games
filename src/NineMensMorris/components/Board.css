@@ -1,0 +1,231 @@
+/* ============================================================
+   九子棋棋盘：三环 24 点
+   ============================================================ */
+
+.nm-board {
+    position: relative;
+    width: min(100%, 560px);
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+    border-radius: 22px;
+    border: 1px solid var(--stroke-1);
+    background:
+        radial-gradient(120% 120% at 50% 0%, rgba(163, 230, 53, 0.1), transparent 62%),
+        linear-gradient(160deg, #141b2b, #0a0e18);
+    box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    user-select: none;
+}
+
+.nm-board__grid {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.nm-board__ring,
+.nm-board__line {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.14);
+    stroke-width: 3;
+    stroke-linecap: round;
+}
+
+.nm-board__ring {
+    stroke: rgba(255, 255, 255, 0.2);
+}
+
+.nm-board__mill {
+    fill: none;
+    stroke: var(--gold);
+    stroke-width: 4;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 6px rgba(245, 196, 81, 0.7));
+    animation: nm-mill 1.6s ease-in-out infinite;
+}
+
+.nm-board__coord {
+    fill: var(--text-3);
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+/* ---------------- 落点 ---------------- */
+.nm-node {
+    position: absolute;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 8.8%;
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.16s ease;
+}
+
+.nm-node:disabled {
+    cursor: default;
+}
+
+.nm-node:focus-visible {
+    outline: 2px solid var(--brand-2);
+    outline-offset: 2px;
+}
+
+.nm-node:not(:disabled):hover {
+    transform: translate(-50%, -50%) scale(1.08);
+}
+
+/* ---------------- 棋子 ---------------- */
+.nm-stone {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    animation: nm-drop 0.24s cubic-bezier(0.34, 1.4, 0.64, 1);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.nm-node.is-black .nm-stone {
+    background: radial-gradient(circle at 32% 28%, #64748b, #0b1220 72%);
+    border: 1px solid rgba(125, 211, 252, 0.55);
+    box-shadow: 0 0 14px rgba(34, 211, 238, 0.26), inset 0 -3px 8px rgba(0, 0, 0, 0.75);
+}
+
+.nm-node.is-white .nm-stone {
+    background: radial-gradient(circle at 32% 28%, #ffffff, #c7cedb 72%);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 14px rgba(124, 92, 255, 0.3), inset 0 -3px 8px rgba(15, 23, 42, 0.28);
+}
+
+/* 可选中（走子阶段自己的棋子） */
+.nm-node.is-selectable .nm-stone {
+    box-shadow: 0 0 0 3px rgba(163, 230, 53, 0.5), 0 0 16px rgba(163, 230, 53, 0.3);
+}
+
+.nm-node.is-selected .nm-stone {
+    transform: scale(1.14);
+    box-shadow: 0 0 0 3px var(--gold), 0 0 20px rgba(245, 196, 81, 0.6);
+}
+
+/* 最后一手：金色实线环（用单独图层，避免与其它标记冲突） */
+.nm-ring {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.nm-ring--last {
+    inset: -12%;
+    border: 2px solid rgba(245, 196, 81, 0.95);
+    box-shadow: 0 0 14px rgba(245, 196, 81, 0.55);
+}
+
+/* 引擎推荐：金色虚线 */
+.nm-ring--hint {
+    inset: -26%;
+    border: 2px dashed var(--gold);
+    filter: drop-shadow(0 0 8px rgba(245, 196, 81, 0.85));
+    animation: nm-hint 1.4s ease-in-out infinite;
+}
+
+/* 必吃的对方子：红色虚线脉冲 */
+.nm-ring--capture {
+    inset: -22%;
+    border: 2px dashed #f87171;
+    filter: drop-shadow(0 0 8px rgba(248, 113, 113, 0.85));
+    animation: nm-capture 0.9s ease-in-out infinite;
+}
+
+/* 成三线上的棋子光晕 */
+.nm-node.is-mill .nm-stone {
+    box-shadow: 0 0 18px rgba(245, 196, 81, 0.65), inset 0 0 10px rgba(245, 196, 81, 0.3);
+}
+
+/* 空位可落点：呼吸点 */
+.nm-dot {
+    width: 30%;
+    height: 30%;
+    border-radius: 50%;
+    background: rgba(163, 230, 53, 0.55);
+    box-shadow: 0 0 10px rgba(163, 230, 53, 0.7);
+    animation: nm-breathe 1.5s ease-in-out infinite;
+}
+
+@keyframes nm-drop {
+    from {
+        opacity: 0;
+        transform: scale(0.4);
+    }
+}
+
+@keyframes nm-breathe {
+    0%,
+    100% {
+        opacity: 0.35;
+        transform: scale(0.8);
+    }
+    50% {
+        opacity: 0.9;
+        transform: scale(1);
+    }
+}
+
+@keyframes nm-mill {
+    0%,
+    100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+@keyframes nm-hint {
+    0%,
+    100% {
+        opacity: 0.5;
+        transform: scale(0.96);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.02);
+    }
+}
+
+@keyframes nm-capture {
+    0%,
+    100% {
+        opacity: 0.45;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+@media (max-width: 520px) {
+    .nm-board {
+        border-radius: 18px;
+    }
+
+    .nm-board__coord {
+        font-size: 22px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nm-dot,
+    .nm-board__mill,
+    .nm-ring--hint,
+    .nm-ring--capture,
+    .nm-stone {
+        animation: none;
+    }
+}

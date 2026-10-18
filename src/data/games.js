@@ -143,7 +143,7 @@ export const GAMES = [
         color: '#a3e635',
         description: '摆子、走子、飞子三阶段推进，先行连成三子即可吃子，古老而深邃的落子博弈。',
         path: '/home/nine-mens-morris',
-        playable: false,
+        playable: true,
         accent: 'lime',
         meta: ['2 人', '15 分钟', '烧脑']
     },

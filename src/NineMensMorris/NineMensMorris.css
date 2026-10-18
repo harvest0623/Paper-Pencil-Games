@@ -1,0 +1,45 @@
+/* ============================================================
+   九子棋页面
+   ============================================================ */
+
+.nmm-page {
+    min-height: 100vh;
+}
+
+.nmm-page .gp-turnbar,
+.nmm-page .gp-boardstats,
+.nmm-page .gp-stage__hint {
+    max-width: 100%;
+}
+
+/* 棋盘在三环棋里本身是正方形，无需额外尺寸变量 */
+.nmm-page .gp-stage__board-col {
+    align-items: stretch;
+}
+
+/* ---------------- 侧栏补充 ---------------- */
+.nmm-first-note {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--text-3);
+}
+
+/* 棋谱中的吃子标记 */
+.nmm-log__tag {
+    margin-left: auto;
+    padding: 2px 9px;
+    border-radius: var(--r-full);
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+    color: #fecaca;
+    background: rgba(239, 68, 68, 0.16);
+    border: 1px solid rgba(248, 113, 113, 0.4);
+}
+
+@media (max-width: 1024px) {
+    .nmm-page .gp-stage__inner {
+        grid-template-columns: 1fr;
+    }
+}
