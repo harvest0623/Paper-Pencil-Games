@@ -1,0 +1,186 @@
+/* ============================================================
+   数织棋盘
+   ============================================================ */
+
+.np-board-wrap {
+    --band: calc(var(--board) * 0.29);
+    --cell: 28px;
+    position: relative;
+    display: grid;
+    padding: 8px;
+    border-radius: 18px;
+    background:
+        radial-gradient(130% 130% at 0% 0%, rgba(192, 132, 252, 0.16), transparent 62%),
+        radial-gradient(130% 130% at 100% 100%, rgba(34, 211, 238, 0.16), transparent 62%),
+        linear-gradient(158deg, #141a29 0%, #090c15 100%);
+    border: 2px solid rgba(148, 163, 184, 0.34);
+    box-shadow:
+        0 0 0 6px rgba(255, 255, 255, 0.03),
+        0 24px 58px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    user-select: none;
+}
+
+/* ---------------- 线索带 ---------------- */
+.np-clue {
+    display: flex;
+    gap: calc(var(--cell) * 0.12);
+    padding: calc(var(--cell) * 0.1);
+    font-size: calc(var(--cell) * 0.46);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--text-2);
+    font-variant-numeric: tabular-nums;
+    transition: color 0.25s ease, opacity 0.25s ease;
+}
+
+.np-clue--row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.np-clue--col {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.np-clue__num {
+    display: block;
+}
+
+.np-clue__zero {
+    color: var(--text-3);
+    opacity: 0.45;
+    font-size: calc(var(--cell) * 0.36);
+}
+
+/* 线索已满足：整条淡出 */
+.np-clue.is-done {
+    color: rgba(148, 163, 184, 0.3);
+}
+
+.np-clue.is-done .np-clue__zero {
+    opacity: 0.2;
+}
+
+/* ---------------- 格子 ---------------- */
+.np-cell {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-right: 1px solid rgba(255, 255, 255, 0.055);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+    background: rgba(255, 255, 255, 0.018);
+    cursor: pointer;
+    transition: background 0.16s ease, box-shadow 0.2s ease;
+}
+
+/* 每 5 格加粗分隔线，便于目视定位 */
+.np-cell.is-gap-right {
+    border-right: 2px solid rgba(148, 163, 184, 0.4);
+}
+
+.np-cell.is-gap-bottom {
+    border-bottom: 2px solid rgba(148, 163, 184, 0.4);
+}
+
+.np-cell:hover {
+    background: rgba(124, 92, 255, 0.2);
+    box-shadow: inset 0 0 0 1px rgba(124, 92, 255, 0.45);
+}
+
+.np-cell:active {
+    background: rgba(124, 92, 255, 0.34);
+}
+
+.np-cell:focus-visible {
+    outline: 2px solid var(--brand-2);
+    outline-offset: -2px;
+}
+
+/* 已涂黑 */
+.np-cell.is-filled {
+    background: linear-gradient(140deg, #a78bfa 0%, #7c5cff 45%, #22d3ee 100%);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.16),
+        0 0 10px rgba(124, 92, 255, 0.35);
+    animation: np-paint 0.22s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+@keyframes np-paint {
+    0% {
+        transform: scale(0.72);
+        opacity: 0.4;
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* 与图案不符 */
+.np-cell.is-filled.is-wrong {
+    background: linear-gradient(140deg, #fca5a5, #dc2626);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.2),
+        0 0 12px rgba(220, 38, 38, 0.5);
+}
+
+/* 标记（X） */
+.np-cell.is-marked::before,
+.np-cell.is-marked::after {
+    content: '';
+    position: absolute;
+    left: 24%;
+    right: 24%;
+    top: 50%;
+    height: 1.6px;
+    border-radius: 2px;
+    background: rgba(148, 163, 184, 0.8);
+}
+
+.np-cell.is-marked::before {
+    transform: rotate(45deg);
+}
+
+.np-cell.is-marked::after {
+    transform: rotate(-45deg);
+}
+
+/* 最近落笔的一格 */
+.np-cell.is-last {
+    box-shadow: inset 0 0 0 2px rgba(245, 196, 81, 0.7);
+}
+
+/* ---------------- 引擎提示 ---------------- */
+.np-hint-ring {
+    position: absolute;
+    inset: 6%;
+    border-radius: 6px;
+    border: 2px dashed rgba(245, 196, 81, 0.95);
+    box-shadow: 0 0 16px rgba(245, 196, 81, 0.55);
+    animation: np-ring 1.3s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes np-ring {
+    0%,
+    100% {
+        transform: scale(0.9);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.02);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 620px) {
+    .np-board-wrap {
+        --band: calc(var(--board) * 0.32);
+        padding: 6px;
+        border-radius: 14px;
+    }
+}

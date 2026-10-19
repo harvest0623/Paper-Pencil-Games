@@ -155,7 +155,7 @@ export const GAMES = [
         color: '#c084fc',
         description: '依据行列数字推理出每一格的填涂，最终会浮现出一幅隐藏的像素图案。',
         path: '/home/nonogram',
-        playable: false,
+        playable: true,
         accent: 'violet',
         meta: ['1 人', '10 分钟', '逻辑']
     },
