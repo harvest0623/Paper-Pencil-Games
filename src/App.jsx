@@ -13,6 +13,7 @@ import DotsAndBoxesGame from './DotsAndBoxes/DotsAndBoxesGame';
 import BattleshipGame from './Battleship/BattleshipGame';
 import NineMensMorrisGame from './NineMensMorris/NineMensMorrisGame';
 import NonogramGame from './Nonogram/NonogramGame';
+import KakuroGame from './Kakuro/KakuroGame';
 import ScrollToTop from './components/ScrollToTop';
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
                 <Route path="/home/battleship" element={<BattleshipGame />} />
                 <Route path="/home/nine-mens-morris" element={<NineMensMorrisGame />} />
                 <Route path="/home/nonogram" element={<NonogramGame />} />
+                <Route path="/home/kakuro" element={<KakuroGame />} />
             </Routes>
         </Router>
     );

@@ -167,7 +167,7 @@ export const GAMES = [
         color: '#2dd4bf',
         description: '把数字填入空格，使每段横向与纵向之和等于提示值，且同段内不重复。',
         path: '/home/kakuro',
-        playable: false,
+        playable: true,
         accent: 'teal',
         meta: ['1 人', '10 分钟', '逻辑']
     },

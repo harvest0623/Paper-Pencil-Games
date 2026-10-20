@@ -1,0 +1,203 @@
+/* ============================================================
+   数和棋盘
+   ============================================================ */
+
+.kr-board {
+    --cell: 40px;
+    position: relative;
+    box-sizing: border-box;
+    display: grid;
+    width: var(--board);
+    aspect-ratio: 1 / 1;
+    gap: 2px;
+    padding: 7px;
+    border-radius: 18px;
+    background:
+        radial-gradient(130% 130% at 0% 0%, rgba(124, 92, 255, 0.16), transparent 62%),
+        radial-gradient(130% 130% at 100% 100%, rgba(34, 211, 238, 0.16), transparent 62%),
+        linear-gradient(158deg, #141a29 0%, #090c15 100%);
+    border: 2px solid rgba(148, 163, 184, 0.34);
+    box-shadow:
+        0 0 0 6px rgba(255, 255, 255, 0.03),
+        0 24px 58px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    user-select: none;
+}
+
+/* ---------------- 线索黑格 ---------------- */
+.kr-clue {
+    position: relative;
+    border-radius: 5px;
+    background: linear-gradient(150deg, #222b40 0%, #141a29 55%, #0b0f1a 100%);
+    box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.14);
+    overflow: hidden;
+}
+
+/* 同时含横向与纵向线索时，以「\」对角线分隔两半 */
+.kr-clue--both::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom right,
+        transparent calc(50% - 0.7px),
+        rgba(148, 163, 184, 0.5) calc(50% - 0.7px),
+        rgba(148, 163, 184, 0.5) calc(50% + 0.7px),
+        transparent calc(50% + 0.7px)
+    );
+}
+
+.kr-clue__col,
+.kr-clue__row {
+    position: absolute;
+    font-size: calc(var(--cell) * 0.4);
+    font-weight: 800;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+/* 纵向（下方一整列）线索：右上角 */
+.kr-clue__col {
+    top: 8%;
+    right: 9%;
+    color: #67e8f9;
+    text-shadow: 0 0 8px rgba(34, 211, 238, 0.4);
+}
+
+/* 横向（右侧一整行）线索：左下角 */
+.kr-clue__row {
+    bottom: 8%;
+    left: 9%;
+    color: #f5c451;
+    text-shadow: 0 0 8px rgba(245, 196, 81, 0.35);
+}
+
+/* ---------------- 可填白格 ---------------- */
+.kr-cell {
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.035);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    font-family: inherit;
+    font-size: calc(var(--cell) * 0.52);
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-2);
+    cursor: pointer;
+    transition:
+        background 0.16s ease,
+        box-shadow 0.2s ease,
+        color 0.16s ease;
+}
+
+.kr-cell:hover {
+    background: rgba(124, 92, 255, 0.18);
+    box-shadow: inset 0 0 0 1px rgba(124, 92, 255, 0.5);
+}
+
+.kr-cell:focus-visible {
+    outline: 2px solid var(--brand-2);
+    outline-offset: -2px;
+}
+
+/* 选中格所在整行段 / 整列段 */
+.kr-cell.is-line {
+    background: rgba(124, 92, 255, 0.1);
+}
+
+/* 当前选中的格子 */
+.kr-cell.is-selected {
+    background: rgba(124, 92, 255, 0.32);
+    box-shadow:
+        inset 0 0 0 2px rgba(167, 139, 250, 0.95),
+        0 0 14px rgba(124, 92, 255, 0.45);
+    color: var(--text-1);
+}
+
+/* 玩家填入的数字 */
+.kr-cell.is-filled {
+    color: #7ef0ff;
+    text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+    animation: kr-drop 0.22s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+@keyframes kr-drop {
+    0% {
+        transform: scale(0.7);
+        opacity: 0.4;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* 题目自带的提示数字：锁定不可改 */
+.kr-cell.is-given {
+    background: rgba(148, 163, 184, 0.16);
+    color: #e5edff;
+    cursor: default;
+}
+
+.kr-cell.is-given.is-filled {
+    animation: none;
+}
+
+/* 同段内重复 */
+.kr-cell.is-conflict {
+    background: rgba(220, 38, 38, 0.28);
+    box-shadow: inset 0 0 0 1px rgba(248, 113, 113, 0.7);
+    color: #fecaca;
+}
+
+/* 与答案不符 */
+.kr-cell.is-wrong {
+    background: linear-gradient(140deg, #fca5a5, #dc2626);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.2),
+        0 0 12px rgba(220, 38, 38, 0.5);
+    color: #fff;
+}
+
+/* 最近落笔 */
+.kr-cell.is-last {
+    box-shadow: inset 0 0 0 2px rgba(245, 196, 81, 0.7);
+}
+
+/* ---------------- 引擎提示 ---------------- */
+.kr-hint-ring {
+    position: absolute;
+    inset: 8%;
+    border-radius: 6px;
+    border: 2px dashed rgba(245, 196, 81, 0.95);
+    box-shadow: 0 0 16px rgba(245, 196, 81, 0.55);
+    animation: kr-ring 1.3s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes kr-ring {
+    0%,
+    100% {
+        transform: scale(0.9);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.02);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 620px) {
+    .kr-board {
+        gap: 1px;
+        padding: 5px;
+        border-radius: 14px;
+    }
+}
