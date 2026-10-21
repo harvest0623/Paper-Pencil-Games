@@ -179,7 +179,7 @@ export const GAMES = [
         color: '#34d399',
         description: '沿着点阵连线，让每个数字格四周的线段数等于提示值，最终连成一条封闭回路。',
         path: '/home/slitherlink',
-        playable: false,
+        playable: true,
         accent: 'emerald',
         meta: ['1 人', '10 分钟', '逻辑']
     },

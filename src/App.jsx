@@ -14,6 +14,7 @@ import BattleshipGame from './Battleship/BattleshipGame';
 import NineMensMorrisGame from './NineMensMorris/NineMensMorrisGame';
 import NonogramGame from './Nonogram/NonogramGame';
 import KakuroGame from './Kakuro/KakuroGame';
+import SlitherlinkGame from './Slitherlink/SlitherlinkGame';
 import ScrollToTop from './components/ScrollToTop';
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
                 <Route path="/home/nine-mens-morris" element={<NineMensMorrisGame />} />
                 <Route path="/home/nonogram" element={<NonogramGame />} />
                 <Route path="/home/kakuro" element={<KakuroGame />} />
+                <Route path="/home/slitherlink" element={<SlitherlinkGame />} />
             </Routes>
         </Router>
     );

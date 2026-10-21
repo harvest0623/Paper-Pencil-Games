@@ -1,0 +1,266 @@
+/* ============================================================
+   数回棋盘
+   三层结构：数字格（内）→ 边（可点击）→ 点阵（外）
+   --n      : 数字格边长（由 Board.jsx 内联注入）
+   --cell   : 相邻两点的间距
+   ============================================================ */
+
+.sl-board {
+    --cell: calc(var(--board) / var(--n));
+    --dot: max(4px, calc(var(--cell) * 0.13));
+    --line: max(3px, calc(var(--cell) * 0.115));
+    --hit: calc(var(--cell) * 0.44);
+    --pad: calc(var(--board) * 0.075);
+
+    width: calc(var(--board) + var(--pad) * 2);
+    height: calc(var(--board) + var(--pad) * 2);
+    display: grid;
+    place-items: center;
+    padding: var(--pad);
+    border-radius: var(--r-lg);
+    background:
+        radial-gradient(120% 120% at 50% 0%, rgba(124, 92, 255, 0.1), transparent 62%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.012));
+    border: 1px solid var(--stroke-1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), var(--shadow-md);
+}
+
+.sl-canvas {
+    position: relative;
+    width: var(--board);
+    height: var(--board);
+}
+
+/* ---------------- 数字格 ---------------- */
+.sl-cell {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: calc(var(--cell) * 0.74);
+    height: calc(var(--cell) * 0.74);
+    transform: translate(-50%, -50%);
+    border-radius: calc(var(--cell) * 0.2);
+    font-size: clamp(11px, calc(var(--cell) * 0.44), 22px);
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-2);
+    background: rgba(255, 255, 255, 0.045);
+    box-shadow: inset 0 0 0 1px var(--stroke-1);
+    pointer-events: none;
+    transition: color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* 四周线段数已经对上：整格点亮 */
+.sl-cell.is-done {
+    color: #061319;
+    background: linear-gradient(135deg, var(--brand-2), #7dd3fc);
+    box-shadow: 0 6px 18px rgba(34, 211, 238, 0.32);
+}
+
+/* 四周线段数已不可能对上：标红 */
+.sl-cell.is-bad {
+    color: #ffd9d9;
+    background: rgba(255, 107, 107, 0.18);
+    box-shadow: inset 0 0 0 1px rgba(255, 107, 107, 0.6);
+}
+
+/* ---------------- 边（可点击按钮） ---------------- */
+.sl-edge {
+    position: absolute;
+    left: calc(var(--x) * var(--cell));
+    top: calc(var(--y) * var(--cell));
+    transform: translate(-50%, -50%);
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: none;
+    border-radius: var(--r-full);
+    background: transparent;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.sl-edge--h {
+    width: var(--cell);
+    height: var(--hit);
+}
+
+.sl-edge--v {
+    width: var(--hit);
+    height: var(--cell);
+}
+
+.sl-edge:disabled {
+    cursor: default;
+}
+
+/* 线段本体 */
+.sl-edge__bar {
+    position: absolute;
+    border-radius: var(--r-full);
+    background: rgba(255, 255, 255, 0.1);
+    opacity: 0;
+    transition: opacity 0.16s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sl-edge--h .sl-edge__bar {
+    width: 100%;
+    height: var(--line);
+}
+
+.sl-edge--v .sl-edge__bar {
+    width: var(--line);
+    height: 100%;
+}
+
+/* 悬停预览：淡淡的一条线，提示这里可以画 */
+.sl-board.is-live .sl-edge:hover .sl-edge__bar {
+    opacity: 0.55;
+}
+
+/* 已连线 */
+.sl-edge.is-line .sl-edge__bar {
+    opacity: 1;
+    background: var(--brand-grad);
+    box-shadow: 0 0 12px rgba(34, 211, 238, 0.55), 0 0 22px rgba(124, 92, 255, 0.3);
+}
+
+.sl-edge.is-line:hover .sl-edge__bar {
+    filter: brightness(1.12);
+}
+
+/* 打叉 */
+.sl-edge__cross {
+    position: absolute;
+    width: calc(var(--cell) * 0.3);
+    height: calc(var(--cell) * 0.3);
+    opacity: 0;
+    transition: opacity 0.18s ease;
+}
+
+.sl-edge__cross::before,
+.sl-edge__cross::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 100%;
+    height: 2.4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.34);
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.sl-edge__cross::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.sl-edge.is-cross .sl-edge__cross {
+    opacity: 1;
+}
+
+.sl-edge.is-cross:hover .sl-edge__cross {
+    opacity: 0.7;
+}
+
+/* 最后一步 */
+.sl-edge.is-last .sl-edge__bar {
+    animation: sl-edge-flash 0.7s ease-out;
+}
+
+@keyframes sl-edge-flash {
+    0% {
+        box-shadow: 0 0 0 0 rgba(245, 196, 81, 0.85);
+    }
+    100% {
+        box-shadow: 0 0 0 12px rgba(245, 196, 81, 0);
+    }
+}
+
+/* 引擎提示：金色虚线框 */
+.sl-edge.is-hint {
+    box-shadow: inset 0 0 0 1.5px rgba(245, 196, 81, 0.9);
+    border: 1px dashed rgba(245, 196, 81, 0.85);
+    animation: sl-edge-hint 1.4s ease-in-out infinite;
+}
+
+@keyframes sl-edge-hint {
+    0%,
+    100% {
+        background: rgba(245, 196, 81, 0.14);
+    }
+    50% {
+        background: rgba(245, 196, 81, 0.3);
+    }
+}
+
+.sl-edge.is-hint .sl-edge__bar {
+    opacity: 1;
+    background: linear-gradient(90deg, rgba(245, 196, 81, 0.9), rgba(245, 196, 81, 0.55));
+    box-shadow: 0 0 12px rgba(245, 196, 81, 0.6);
+}
+
+.sl-edge.is-hint.is-cross .sl-edge__cross {
+    opacity: 1;
+}
+
+.sl-edge.is-hint.is-cross .sl-edge__cross::before,
+.sl-edge.is-hint.is-cross .sl-edge__cross::after {
+    background: rgba(245, 196, 81, 0.9);
+}
+
+/* 回路闭合：整体加一层金色辉光 */
+.sl-board.is-closed .sl-edge.is-line .sl-edge__bar {
+    box-shadow: 0 0 14px rgba(245, 196, 81, 0.5), 0 0 26px rgba(34, 211, 238, 0.4);
+}
+
+/* ---------------- 点阵 ---------------- */
+.sl-dot {
+    position: absolute;
+    width: var(--dot);
+    height: var(--dot);
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.22);
+    pointer-events: none;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sl-dot.is-joined {
+    background: var(--brand-2);
+    box-shadow: 0 0 10px rgba(34, 211, 238, 0.85);
+}
+
+.sl-dot.is-bad {
+    background: var(--danger);
+    box-shadow: 0 0 10px rgba(255, 107, 107, 0.85);
+}
+
+/* ---------------- 坐标 ---------------- */
+.sl-coord {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    font-size: clamp(9px, calc(var(--cell) * 0.3), 13px);
+    font-weight: 700;
+    color: var(--text-3);
+    pointer-events: none;
+    user-select: none;
+}
+
+.sl-coord--top {
+    top: calc(var(--cell) * -0.5);
+}
+
+.sl-coord--left {
+    left: calc(var(--cell) * -0.5);
+}
+
+/* ---------------- 窄屏 ---------------- */
+@media (max-width: 560px) {
+    .sl-board {
+        --pad: calc(var(--board) * 0.06);
+    }
+    .sl-cell {
+        border-radius: calc(var(--cell) * 0.16);
+    }
+}
