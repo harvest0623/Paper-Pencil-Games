@@ -191,7 +191,7 @@ export const GAMES = [
         color: '#fbbf24',
         description: '滑动合并相同的数字，努力凑出 2048。节奏轻快，一局接一局停不下来。',
         path: '/home/2048',
-        playable: false,
+        playable: true,
         accent: 'amber',
         meta: ['1 人', '10 分钟', '益智']
     },

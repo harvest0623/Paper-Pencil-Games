@@ -1,0 +1,254 @@
+/* ============================================================
+   2048 棋盘
+   --n     : 边长格数（由 Board.jsx 注入）
+   --board : 棋盘总宽（由页面根节点定义）
+   ============================================================ */
+
+.g2048-board {
+    --pad: calc(var(--board) * 0.032);
+    --cell: calc((var(--board) - var(--pad) * 2) / var(--n));
+    --gap: max(6px, calc(var(--cell) * 0.085));
+
+    position: relative;
+    width: var(--board);
+    height: var(--board);
+    border-radius: var(--r-lg);
+    background:
+        radial-gradient(130% 130% at 0% 0%, rgba(124, 92, 255, 0.16), transparent 62%),
+        radial-gradient(130% 130% at 100% 100%, rgba(34, 211, 238, 0.14), transparent 62%),
+        linear-gradient(158deg, #141a29 0%, #090c15 100%);
+    border: 2px solid rgba(148, 163, 184, 0.32);
+    box-shadow:
+        0 0 0 6px rgba(255, 255, 255, 0.03),
+        0 24px 58px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.g2048-slots,
+.g2048-tiles {
+    position: absolute;
+    inset: 0;
+}
+
+/* ---------------- 底槽 ---------------- */
+.g2048-slot {
+    position: absolute;
+    left: calc(var(--pad) + var(--gap) / 2);
+    top: calc(var(--pad) + var(--gap) / 2);
+    width: calc(var(--cell) - var(--gap));
+    height: calc(var(--cell) - var(--gap));
+    border-radius: calc(var(--cell) * 0.16);
+    background: rgba(255, 255, 255, 0.045);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.045);
+    transform: translate(calc(var(--c) * var(--cell)), calc(var(--r) * var(--cell)));
+}
+
+/* ---------------- 方块 ---------------- */
+.g2048-tile {
+    position: absolute;
+    left: calc(var(--pad) + var(--gap) / 2);
+    top: calc(var(--pad) + var(--gap) / 2);
+    width: calc(var(--cell) - var(--gap));
+    height: calc(var(--cell) - var(--gap));
+    border-radius: calc(var(--cell) * 0.16);
+    transform: translate(calc(var(--c) * var(--cell)), calc(var(--r) * var(--cell)));
+    transition: transform 0.13s cubic-bezier(0.3, 0.7, 0.4, 1);
+    will-change: transform;
+    z-index: 2;
+}
+
+.g2048-tile__face {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    color: #fff;
+    font-weight: 800;
+    font-size: clamp(0.95rem, calc(var(--cell) * 0.38), 2.3rem);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    line-height: 1;
+}
+
+/* 位数多的方块自动缩小字号 */
+.g2048-tile[data-len='3'] .g2048-tile__face {
+    font-size: clamp(0.85rem, calc(var(--cell) * 0.32), 1.9rem);
+}
+
+.g2048-tile[data-len='4'] .g2048-tile__face {
+    font-size: clamp(0.72rem, calc(var(--cell) * 0.26), 1.55rem);
+}
+
+.g2048-tile[data-len='5'] .g2048-tile__face {
+    font-size: clamp(0.62rem, calc(var(--cell) * 0.21), 1.25rem);
+}
+
+/* ---------------- 数值配色（紫→青→金渐进） ---------------- */
+.g2048-tile.t-2 {
+    background: linear-gradient(150deg, #2a3040, #1d2331);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.g2048-tile.t-2 .g2048-tile__face {
+    color: #cfd6e6;
+}
+
+.g2048-tile.t-4 {
+    background: linear-gradient(150deg, #3a4058, #282e42);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.g2048-tile.t-4 .g2048-tile__face {
+    color: #e6ecf8;
+}
+
+.g2048-tile.t-8 {
+    background: linear-gradient(150deg, #6d5bff, #5145d6);
+    box-shadow: 0 8px 20px rgba(81, 69, 214, 0.32);
+}
+
+.g2048-tile.t-16 {
+    background: linear-gradient(150deg, #8b5cf6, #6d28d9);
+    box-shadow: 0 8px 22px rgba(109, 40, 217, 0.38);
+}
+
+.g2048-tile.t-32 {
+    background: linear-gradient(150deg, #c084fc, #9333ea);
+    box-shadow: 0 8px 24px rgba(147, 51, 234, 0.42);
+}
+
+.g2048-tile.t-64 {
+    background: linear-gradient(150deg, #f472b6, #db2777);
+    box-shadow: 0 8px 24px rgba(219, 39, 119, 0.42);
+}
+
+.g2048-tile.t-128 {
+    background: linear-gradient(150deg, #fb923c, #ea580c);
+    box-shadow: 0 8px 26px rgba(234, 88, 12, 0.45);
+}
+
+.g2048-tile.t-256 {
+    background: linear-gradient(150deg, #fbbf24, #f59e0b);
+    box-shadow: 0 8px 28px rgba(245, 158, 11, 0.48);
+}
+
+.g2048-tile.t-256 .g2048-tile__face,
+.g2048-tile.t-512 .g2048-tile__face,
+.g2048-tile.t-1024 .g2048-tile__face,
+.g2048-tile.t-super .g2048-tile__face {
+    color: #1a1204;
+}
+
+.g2048-tile.t-512 {
+    background: linear-gradient(150deg, #22d3ee, #0891b2);
+    box-shadow: 0 8px 28px rgba(34, 211, 238, 0.42);
+}
+
+.g2048-tile.t-512 .g2048-tile__face,
+.g2048-tile.t-1024 .g2048-tile__face {
+    color: #04252b;
+}
+
+.g2048-tile.t-1024 {
+    background: linear-gradient(150deg, #34d399, #059669);
+    box-shadow: 0 8px 30px rgba(5, 150, 105, 0.45);
+}
+
+.g2048-tile.t-2048 {
+    background: linear-gradient(135deg, #7c5cff, #22d3ee);
+    box-shadow:
+        0 0 26px rgba(124, 92, 255, 0.6),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+}
+
+.g2048-tile.t-super {
+    background: linear-gradient(135deg, #f5c451, #f472b6);
+    box-shadow:
+        0 0 30px rgba(245, 196, 81, 0.55),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.32);
+}
+
+/* ---------------- 动画 ---------------- */
+.g2048-tile.is-new .g2048-tile__face {
+    animation: g2048-appear 0.16s ease;
+}
+
+.g2048-tile.is-merged .g2048-tile__face {
+    animation: g2048-merge 0.22s cubic-bezier(0.34, 1.5, 0.64, 1);
+}
+
+@keyframes g2048-appear {
+    from {
+        opacity: 0;
+        transform: scale(0.62);
+    }
+}
+
+@keyframes g2048-merge {
+    0% {
+        transform: scale(0.84);
+    }
+    60% {
+        transform: scale(1.16);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* ---------------- 提示箭头（金色虚框） ---------------- */
+.g2048-dirhint {
+    position: absolute;
+    z-index: 4;
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(8, 10, 17, 0.82);
+    border: 1px dashed rgba(245, 196, 81, 0.85);
+    box-shadow: 0 0 20px rgba(245, 196, 81, 0.35);
+    color: var(--gold);
+    font-size: 1.25rem;
+    font-weight: 800;
+    line-height: 1;
+    pointer-events: none;
+    animation: g2048-hint-pulse 1.2s ease-in-out infinite;
+}
+
+.g2048-dirhint.is-up {
+    top: 10px;
+    left: 50%;
+    margin-left: -21px;
+}
+
+.g2048-dirhint.is-down {
+    bottom: 10px;
+    left: 50%;
+    margin-left: -21px;
+}
+
+.g2048-dirhint.is-left {
+    left: 10px;
+    top: 50%;
+    margin-top: -21px;
+}
+
+.g2048-dirhint.is-right {
+    right: 10px;
+    top: 50%;
+    margin-top: -21px;
+}
+
+@keyframes g2048-hint-pulse {
+    50% {
+        transform: scale(1.08);
+        box-shadow: 0 0 28px rgba(245, 196, 81, 0.5);
+    }
+}
