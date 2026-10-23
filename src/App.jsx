@@ -16,6 +16,7 @@ import NonogramGame from './Nonogram/NonogramGame';
 import KakuroGame from './Kakuro/KakuroGame';
 import SlitherlinkGame from './Slitherlink/SlitherlinkGame';
 import Game2048Game from './Game2048/Game2048Game';
+import SokobanGame from './Sokoban/SokobanGame';
 import ScrollToTop from './components/ScrollToTop';
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
                 <Route path="/home/kakuro" element={<KakuroGame />} />
                 <Route path="/home/slitherlink" element={<SlitherlinkGame />} />
                 <Route path="/home/2048" element={<Game2048Game />} />
+                <Route path="/home/sokoban" element={<SokobanGame />} />
             </Routes>
         </Router>
     );

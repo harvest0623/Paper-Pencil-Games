@@ -203,7 +203,7 @@ export const GAMES = [
         color: '#fb7185',
         description: '推动箱子到指定位置，走位不可撤销，每一步都考验空间规划与先见之明。',
         path: '/home/sokoban',
-        playable: false,
+        playable: true,
         accent: 'rose',
         meta: ['1 人', '10 分钟', '益智']
     },
