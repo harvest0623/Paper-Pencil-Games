@@ -215,7 +215,7 @@ export const GAMES = [
         color: '#e879f9',
         description: '推动棋子一步步跳向对面阵营，借助他人之子连跳，可以一鼓作气完成长距离转移。',
         path: '/home/chinese-checkers',
-        playable: false,
+        playable: true,
         accent: 'fuchsia',
         meta: ['2 人', '15 分钟', '策略']
     },

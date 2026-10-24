@@ -1,0 +1,222 @@
+/* ============================================================
+   跳棋棋盘
+   --unit : 相邻棋位的水平间距（由 --board / 13.6 得出）
+   --x    : 棋位的水平单位坐标
+   --y    : 棋位的竖直单位坐标（行号 × √3/2）
+   ============================================================ */
+
+.cc-board {
+    --unit: calc(var(--board) / 13.6);
+
+    position: relative;
+    width: calc(var(--unit) * 13.6);
+    height: calc(var(--unit) * 15.26);
+    border-radius: var(--r-lg);
+    background:
+        radial-gradient(120% 120% at 0% 0%, rgba(232, 121, 249, 0.16), transparent 60%),
+        radial-gradient(120% 120% at 100% 100%, rgba(34, 211, 238, 0.13), transparent 60%),
+        linear-gradient(158deg, #141a29 0%, #090c15 100%);
+    border: 2px solid rgba(148, 163, 184, 0.32);
+    box-shadow:
+        0 0 0 6px rgba(255, 255, 255, 0.03),
+        0 24px 58px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.cc-cells,
+.cc-pieces {
+    position: absolute;
+    inset: 0;
+}
+
+/* 棋子层只负责显示，点击穿透到下方棋位 */
+.cc-pieces {
+    pointer-events: none;
+}
+
+/* ---------------- 棋位 ---------------- */
+.cc-cell {
+    position: absolute;
+    left: calc(var(--unit) * 0.3);
+    top: calc(var(--unit) * 0.3);
+    width: calc(var(--unit) * 0.8);
+    height: calc(var(--unit) * 0.8);
+    padding: 0;
+    border: none;
+    background: transparent;
+    transform: translate(calc(var(--x) * var(--unit)), calc(var(--y) * var(--unit)));
+    cursor: default;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.cc-cell.is-active {
+    cursor: pointer;
+}
+
+/* 棋位底孔 */
+.cc-cell::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.045);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+        inset 0 2px 4px rgba(0, 0, 0, 0.45);
+    transition: background 0.18s ease, box-shadow 0.18s ease;
+}
+
+/* 蓝方主场（上方三角） */
+.cc-cell.is-home-blue::before {
+    background: rgba(59, 130, 246, 0.16);
+    box-shadow:
+        inset 0 0 0 1px rgba(96, 165, 250, 0.32),
+        inset 0 0 12px rgba(59, 130, 246, 0.18);
+}
+
+/* 红方主场（下方三角） */
+.cc-cell.is-home-red::before {
+    background: rgba(220, 38, 38, 0.16);
+    box-shadow:
+        inset 0 0 0 1px rgba(248, 113, 113, 0.32),
+        inset 0 0 12px rgba(220, 38, 38, 0.18);
+}
+
+/* 可点击棋位悬停 */
+.cc-cell.is-active:hover::before {
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+        inset 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* 上一步的起点与终点 */
+.cc-cell.is-last-from::before {
+    box-shadow:
+        inset 0 0 0 2px rgba(255, 255, 255, 0.16),
+        inset 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.cc-cell.is-last-to::before {
+    box-shadow:
+        inset 0 0 0 2px rgba(245, 196, 81, 0.55),
+        0 0 16px rgba(245, 196, 81, 0.28);
+}
+
+/* 可选落点：呼吸小点 */
+.cc-cell__dot {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 30%;
+    height: 30%;
+    margin: -15% 0 0 -15%;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.62);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.35);
+    pointer-events: none;
+    animation: cc-dot-breathe 1.6s ease-in-out infinite;
+}
+
+.cc-cell__dot.is-jump {
+    background: var(--brand-2);
+    box-shadow: 0 0 12px rgba(34, 211, 238, 0.7);
+}
+
+@keyframes cc-dot-breathe {
+    50% {
+        opacity: 0.42;
+        transform: scale(0.82);
+    }
+}
+
+/* 引擎提示：金色虚框 */
+.cc-cell__hint {
+    position: absolute;
+    inset: -16%;
+    border: 2px dashed rgba(245, 196, 81, 0.95);
+    border-radius: 50%;
+    box-shadow:
+        0 0 18px rgba(245, 196, 81, 0.4),
+        inset 0 0 12px rgba(245, 196, 81, 0.16);
+    pointer-events: none;
+    animation: cc-hint-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes cc-hint-pulse {
+    50% {
+        inset: -24%;
+        box-shadow: 0 0 26px rgba(245, 196, 81, 0.55);
+    }
+}
+
+/* ---------------- 棋子 ---------------- */
+.cc-piece {
+    position: absolute;
+    left: calc(var(--unit) * 0.3);
+    top: calc(var(--unit) * 0.3);
+    width: calc(var(--unit) * 0.8);
+    height: calc(var(--unit) * 0.8);
+    transform: translate(calc(var(--x) * var(--unit)), calc(var(--y) * var(--unit)));
+    transition: transform 0.28s cubic-bezier(0.3, 0.7, 0.4, 1);
+    will-change: transform;
+    pointer-events: none;
+    z-index: 3;
+}
+
+.cc-piece__face {
+    position: absolute;
+    inset: 7%;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    box-shadow:
+        0 4px 10px rgba(0, 0, 0, 0.45),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.25);
+}
+
+.cc-piece.is-blue .cc-piece__face {
+    background:
+        radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.9), transparent 44%),
+        linear-gradient(150deg, #60a5fa, #1d4ed8);
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.45),
+        0 0 14px rgba(59, 130, 246, 0.4),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.25);
+}
+
+.cc-piece.is-red .cc-piece__face {
+    background:
+        radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.9), transparent 44%),
+        linear-gradient(150deg, #fb7185, #b91c1c);
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.45),
+        0 0 14px rgba(220, 38, 38, 0.4),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.25);
+}
+
+/* 选中的棋子 */
+.cc-piece.is-selected {
+    z-index: 4;
+}
+
+.cc-piece.is-selected .cc-piece__face {
+    border-color: rgba(245, 196, 81, 0.95);
+    box-shadow:
+        0 0 0 3px rgba(245, 196, 81, 0.28),
+        0 0 22px rgba(245, 196, 81, 0.6),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.25);
+    animation: cc-selected 1.4s ease-in-out infinite;
+}
+
+@keyframes cc-selected {
+    50% {
+        box-shadow:
+            0 0 0 5px rgba(245, 196, 81, 0.18),
+            0 0 26px rgba(245, 196, 81, 0.72),
+            inset 0 -2px 4px rgba(0, 0, 0, 0.25);
+    }
+}

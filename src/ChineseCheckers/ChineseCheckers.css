@@ -1,0 +1,69 @@
+/* ============================================================
+   跳棋页面
+   ============================================================ */
+
+.cc-page {
+    min-height: 100vh;
+    --board: min(520px, calc(100vw - 190px));
+}
+
+.cc-page .gp-turnbar,
+.cc-page .gp-boardstats {
+    max-width: var(--board);
+}
+
+.cc-page .gp-stage__hint {
+    max-width: calc(var(--board) + 60px);
+}
+
+/* 窄屏下状态栏文字可收缩，避免溢出 */
+.cc-page .gp-turnbar {
+    overflow: hidden;
+}
+
+.cc-page .gp-turnbar__text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ---------------- 归位进度条 ---------------- */
+.cc-page .gp-dash__seg--blue {
+    background: linear-gradient(90deg, #60a5fa, #2563eb);
+}
+
+.cc-page .gp-dash__seg--red {
+    background: linear-gradient(90deg, #fb7185, #dc2626);
+}
+
+/* ---------------- 说明文字 ---------------- */
+.cc-first-note {
+    margin-top: 10px;
+    font-size: 0.78rem;
+    line-height: 1.65;
+    color: var(--text-3);
+}
+
+.cc-note {
+    margin-top: 12px;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--text-3);
+}
+
+/* ---------------- 响应式 ---------------- */
+@media (max-width: 1080px) {
+    .cc-page {
+        --board: min(520px, calc(100vw - 112px));
+    }
+}
+
+@media (max-width: 760px) {
+    .cc-page {
+        --board: min(520px, calc(100vw - 96px));
+    }
+    .cc-page .gp-stage__hint {
+        max-width: 100%;
+    }
+}

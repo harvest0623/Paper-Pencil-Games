@@ -17,6 +17,7 @@ import KakuroGame from './Kakuro/KakuroGame';
 import SlitherlinkGame from './Slitherlink/SlitherlinkGame';
 import Game2048Game from './Game2048/Game2048Game';
 import SokobanGame from './Sokoban/SokobanGame';
+import ChineseCheckersGame from './ChineseCheckers/ChineseCheckersGame';
 import ScrollToTop from './components/ScrollToTop';
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
                 <Route path="/home/slitherlink" element={<SlitherlinkGame />} />
                 <Route path="/home/2048" element={<Game2048Game />} />
                 <Route path="/home/sokoban" element={<SokobanGame />} />
+                <Route path="/home/chinese-checkers" element={<ChineseCheckersGame />} />
             </Routes>
         </Router>
     );
