@@ -227,7 +227,7 @@ export const GAMES = [
         color: '#f59e0b',
         description: '斜向移动并跳过对手棋子将其吃掉，抵达底线即可升王，规则简单却变化万千。',
         path: '/home/checkers',
-        playable: false,
+        playable: true,
         accent: 'amber',
         meta: ['2 人', '10 分钟', '策略']
     },

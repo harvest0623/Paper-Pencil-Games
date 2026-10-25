@@ -1,0 +1,97 @@
+/* ============================================================
+   西洋跳棋页面
+   ============================================================ */
+
+.chk-page {
+    min-height: 100vh;
+    --board: min(520px, calc(100vw - 214px));
+}
+
+.chk-page .gp-turnbar,
+.chk-page .gp-boardstats {
+    max-width: min(calc(var(--board) + 48px), 100%);
+}
+
+.chk-page .gp-stage__hint {
+    max-width: calc(var(--board) + 84px);
+}
+
+/* 窄屏下状态栏文字可收缩，避免溢出 */
+.chk-page .gp-turnbar {
+    overflow: hidden;
+}
+
+.chk-page .gp-turnbar__text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ---------------- 子力进度条 ---------------- */
+.chk-page .gp-dash__seg--blue {
+    background: linear-gradient(90deg, #60a5fa, #2563eb);
+}
+
+.chk-page .gp-dash__seg--red {
+    background: linear-gradient(90deg, #fb7185, #dc2626);
+}
+
+/* ---------------- 说明文字 ---------------- */
+.chk-first-note,
+.chk-note {
+    margin-top: 10px;
+    font-size: 0.79rem;
+    line-height: 1.65;
+    color: var(--text-3);
+}
+
+.chk-note {
+    margin-top: 12px;
+    font-size: 0.8rem;
+    line-height: 1.6;
+}
+
+/* ---------------- 棋谱标记 ---------------- */
+.chk-log__tag {
+    margin-left: auto;
+    padding: 2px 9px;
+    border-radius: var(--r-full);
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.5;
+    white-space: nowrap;
+}
+
+.chk-log__tag + .chk-log__tag {
+    margin-left: 0;
+}
+
+.chk-log__tag.is-capture {
+    color: #a5f3fc;
+    background: rgba(34, 211, 238, 0.14);
+    border: 1px solid rgba(34, 211, 238, 0.36);
+}
+
+.chk-log__tag.is-king {
+    color: #ffdf9a;
+    background: rgba(245, 196, 81, 0.14);
+    border: 1px solid rgba(245, 196, 81, 0.34);
+}
+
+/* ---------------- 响应式 ---------------- */
+@media (max-width: 1080px) {
+    .chk-page {
+        --board: min(520px, calc(100vw - 112px));
+    }
+}
+
+@media (max-width: 760px) {
+    .chk-page {
+        --board: min(520px, calc(100vw - 96px));
+    }
+
+    .chk-page .gp-stage__hint {
+        max-width: 100%;
+    }
+}

@@ -1,0 +1,363 @@
+/* ============================================================
+   西洋跳棋棋盘
+   --board : 由页面传入的棋盘边长
+   ============================================================ */
+
+.chk-board {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr) 18px;
+    grid-template-rows: 18px auto 18px;
+    gap: 4px 6px;
+    width: min(calc(var(--board) + 48px), 100%);
+    margin: 0 auto;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------------- 坐标 ---------------- */
+.chk-board__cols,
+.chk-board__ranks {
+    display: grid;
+    color: var(--text-3);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.chk-board__cols {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+}
+
+.chk-board__ranks {
+    grid-template-rows: repeat(8, minmax(0, 1fr));
+}
+
+.chk-board__cols span,
+.chk-board__ranks span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chk-board__cols--top {
+    grid-area: 1 / 2;
+    align-items: end;
+}
+
+.chk-board__cols--bottom {
+    grid-area: 3 / 2;
+    align-items: start;
+}
+
+.chk-board__ranks--left {
+    grid-area: 2 / 1;
+}
+
+.chk-board__ranks--right {
+    grid-area: 2 / 3;
+}
+
+/* ---------------- 棋盘 ---------------- */
+.chk-board__grid {
+    grid-area: 2 / 2;
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    grid-template-rows: repeat(8, minmax(0, 1fr));
+    aspect-ratio: 1 / 1;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    background: #0b1018;
+    box-shadow:
+        0 0 0 7px rgba(245, 158, 11, 0.05),
+        0 0 0 8px rgba(255, 255, 255, 0.02),
+        0 26px 60px rgba(0, 0, 0, 0.58),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* ---------------- 格子 ---------------- */
+.chk-sq {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    font-family: inherit;
+    background: transparent;
+    cursor: default;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.chk-sq.is-light {
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01)),
+        linear-gradient(145deg, #333d4c, #262f3d);
+}
+
+.chk-sq.is-dark {
+    background:
+        linear-gradient(145deg, rgba(245, 158, 11, 0.05), transparent 62%),
+        linear-gradient(145deg, #16202e, #0c121b);
+}
+
+.chk-sq.is-dark:not(:disabled) {
+    cursor: pointer;
+}
+
+.chk-sq.is-dark::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.035);
+    pointer-events: none;
+}
+
+.chk-sq:focus-visible {
+    outline: 2px solid var(--brand-2);
+    outline-offset: -2px;
+    z-index: 6;
+}
+
+/* 上一步的起点与终点 */
+.chk-sq.is-last-from {
+    box-shadow: inset 0 0 0 2px rgba(245, 196, 81, 0.22);
+}
+
+.chk-sq.is-last-to {
+    box-shadow:
+        inset 0 0 0 2px rgba(245, 196, 81, 0.42),
+        inset 0 0 24px rgba(245, 196, 81, 0.12);
+}
+
+.chk-sq__last {
+    position: absolute;
+    inset: 5%;
+    border-radius: 50%;
+    border: 2px solid rgba(245, 196, 81, 0.85);
+    box-shadow: 0 0 14px rgba(245, 196, 81, 0.45);
+    pointer-events: none;
+    z-index: 4;
+}
+
+/* ---------------- 棋子 ---------------- */
+.chk-piece {
+    position: relative;
+    z-index: 3;
+    width: 82%;
+    height: 82%;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    animation: chk-drop 0.26s cubic-bezier(0.34, 1.4, 0.64, 1);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.chk-piece.is-blue {
+    background:
+        radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.9), transparent 42%),
+        repeating-radial-gradient(
+            circle at 50% 50%,
+            rgba(255, 255, 255, 0.1) 0 2px,
+            transparent 2px 7px
+        ),
+        linear-gradient(150deg, #60a5fa, #1d4ed8);
+    border: 1px solid rgba(191, 219, 254, 0.75);
+    box-shadow:
+        0 6px 14px rgba(0, 0, 0, 0.55),
+        0 0 16px rgba(59, 130, 246, 0.4),
+        inset 0 -3px 7px rgba(0, 0, 0, 0.4);
+}
+
+.chk-piece.is-red {
+    background:
+        radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.9), transparent 42%),
+        repeating-radial-gradient(
+            circle at 50% 50%,
+            rgba(255, 255, 255, 0.1) 0 2px,
+            transparent 2px 7px
+        ),
+        linear-gradient(150deg, #fb7185, #b91c1c);
+    border: 1px solid rgba(254, 202, 202, 0.75);
+    box-shadow:
+        0 6px 14px rgba(0, 0, 0, 0.55),
+        0 0 16px rgba(220, 38, 38, 0.4),
+        inset 0 -3px 7px rgba(0, 0, 0, 0.4);
+}
+
+/* 升王后的金色外环 */
+.chk-piece.is-king {
+    box-shadow:
+        0 6px 14px rgba(0, 0, 0, 0.55),
+        0 0 0 2px rgba(245, 196, 81, 0.85),
+        0 0 18px rgba(245, 196, 81, 0.5),
+        inset 0 -3px 7px rgba(0, 0, 0, 0.4);
+}
+
+.chk-piece__crown {
+    font-size: calc(var(--board) * 0.04);
+    line-height: 1;
+    color: #ffe6a6;
+    text-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.7),
+        0 0 8px rgba(245, 196, 81, 0.85);
+    transform: translateY(-2%);
+}
+
+/* 选中的棋子 */
+.chk-piece.is-selected {
+    transform: scale(1.1);
+    z-index: 4;
+    box-shadow:
+        0 0 0 3px rgba(245, 196, 81, 0.9),
+        0 0 24px rgba(245, 196, 81, 0.65),
+        inset 0 -3px 7px rgba(0, 0, 0, 0.4);
+    animation: chk-selected 1.3s ease-in-out infinite;
+}
+
+/* ---------------- 落点 ---------------- */
+.chk-dot {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 26%;
+    height: 26%;
+    margin: -13% 0 0 -13%;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.45);
+    pointer-events: none;
+    z-index: 2;
+    animation: chk-breathe 1.5s ease-in-out infinite;
+}
+
+.chk-dot.is-jump {
+    width: 32%;
+    height: 32%;
+    margin: -16% 0 0 -16%;
+    background: var(--brand-2);
+    box-shadow:
+        0 0 14px rgba(34, 211, 238, 0.85),
+        0 0 1px 2px rgba(34, 211, 238, 0.25);
+}
+
+/* 会被吃掉的棋子：红色虚圈 */
+.chk-victim {
+    position: absolute;
+    inset: 3%;
+    border-radius: 50%;
+    border: 2px dashed #f87171;
+    box-shadow: 0 0 12px rgba(248, 113, 113, 0.55);
+    pointer-events: none;
+    z-index: 5;
+    animation: chk-victim 0.95s ease-in-out infinite;
+}
+
+/* ---------------- 引擎提示 ---------------- */
+.chk-hint {
+    position: absolute;
+    inset: 2%;
+    border-radius: 10px;
+    border: 2px dashed rgba(245, 196, 81, 0.95);
+    box-shadow:
+        0 0 18px rgba(245, 196, 81, 0.45),
+        inset 0 0 14px rgba(245, 196, 81, 0.15);
+    pointer-events: none;
+    z-index: 6;
+    animation: chk-hint 1.2s ease-in-out infinite;
+}
+
+.chk-hint-dot {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 16%;
+    height: 16%;
+    margin: -8% 0 0 -8%;
+    border-radius: 50%;
+    background: rgba(245, 196, 81, 0.85);
+    box-shadow: 0 0 8px rgba(245, 196, 81, 0.7);
+    pointer-events: none;
+    z-index: 6;
+}
+
+/* ---------------- 动画 ---------------- */
+@keyframes chk-drop {
+    from {
+        opacity: 0;
+        transform: scale(0.5) translateY(-12%);
+    }
+}
+
+@keyframes chk-breathe {
+    0%,
+    100% {
+        opacity: 0.4;
+        transform: scale(0.82);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes chk-selected {
+    50% {
+        box-shadow:
+            0 0 0 5px rgba(245, 196, 81, 0.22),
+            0 0 26px rgba(245, 196, 81, 0.8),
+            inset 0 -3px 7px rgba(0, 0, 0, 0.4);
+    }
+}
+
+@keyframes chk-victim {
+    0%,
+    100% {
+        opacity: 0.4;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+@keyframes chk-hint {
+    0%,
+    100% {
+        opacity: 0.5;
+        transform: scale(0.97);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.02);
+    }
+}
+
+@media (max-width: 520px) {
+    .chk-board {
+        grid-template-columns: 14px minmax(0, 1fr) 14px;
+        grid-template-rows: 14px auto 14px;
+        gap: 3px 4px;
+        width: min(calc(var(--board) + 32px), 100%);
+    }
+
+    .chk-board__cols,
+    .chk-board__ranks {
+        font-size: 0.62rem;
+    }
+
+    .chk-board__grid {
+        border-radius: 12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .chk-piece,
+    .chk-piece.is-selected,
+    .chk-dot,
+    .chk-victim,
+    .chk-hint {
+        animation: none;
+    }
+}
