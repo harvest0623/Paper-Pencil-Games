@@ -19,6 +19,7 @@ import Game2048Game from './Game2048/Game2048Game';
 import SokobanGame from './Sokoban/SokobanGame';
 import ChineseCheckersGame from './ChineseCheckers/ChineseCheckersGame';
 import CheckersGame from './Checkers/CheckersGame';
+import BanqiGame from './Banqi/BanqiGame';
 import ScrollToTop from './components/ScrollToTop';
 
 function App() {
@@ -47,6 +48,7 @@ function App() {
                 <Route path="/home/sokoban" element={<SokobanGame />} />
                 <Route path="/home/chinese-checkers" element={<ChineseCheckersGame />} />
                 <Route path="/home/checkers" element={<CheckersGame />} />
+                <Route path="/home/banqi" element={<BanqiGame />} />
             </Routes>
         </Router>
     );

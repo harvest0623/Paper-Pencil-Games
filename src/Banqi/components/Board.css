@@ -1,0 +1,369 @@
+/* ============================================================
+   暗棋棋盘
+   --board 由页面传入，代表 8 列棋格的宽度
+   ============================================================ */
+
+.bq-board {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr) 18px;
+    grid-template-rows: 18px auto 18px;
+    gap: 4px 6px;
+    width: min(calc(var(--board) + 48px), 100%);
+    margin: 0 auto;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------------- 坐标 ---------------- */
+.bq-board__cols,
+.bq-board__ranks {
+    display: grid;
+    color: var(--text-3);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.bq-board__cols {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+}
+
+.bq-board__ranks {
+    grid-template-rows: repeat(4, minmax(0, 1fr));
+}
+
+.bq-board__cols span,
+.bq-board__ranks span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bq-board__cols--top {
+    grid-area: 1 / 2;
+    align-items: end;
+}
+
+.bq-board__cols--bottom {
+    grid-area: 3 / 2;
+    align-items: start;
+}
+
+.bq-board__ranks--left {
+    grid-area: 2 / 1;
+}
+
+.bq-board__ranks--right {
+    grid-area: 2 / 3;
+}
+
+/* ---------------- 棋盘 ---------------- */
+.bq-board__grid {
+    grid-area: 2 / 2;
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    grid-template-rows: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+    padding: 8px;
+    aspect-ratio: 2 / 1;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(245, 158, 11, 0.36);
+    background:
+        radial-gradient(circle at 14% 18%, rgba(245, 158, 11, 0.09), transparent 46%),
+        radial-gradient(circle at 86% 82%, rgba(120, 53, 15, 0.24), transparent 52%),
+        linear-gradient(180deg, #1c2635, #0d141e);
+    box-shadow:
+        0 0 0 7px rgba(245, 158, 11, 0.045),
+        0 0 0 8px rgba(255, 255, 255, 0.02),
+        0 26px 58px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* ---------------- 棋格 ---------------- */
+.bq-cell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.014);
+    font-family: inherit;
+    cursor: default;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.18s ease;
+}
+
+.bq-cell:not(:disabled) {
+    cursor: pointer;
+}
+
+.bq-cell:not(:disabled):hover {
+    background: rgba(245, 196, 81, 0.055);
+}
+
+.bq-cell:focus-visible {
+    outline: 2px solid var(--brand-2);
+    outline-offset: -2px;
+    z-index: 6;
+}
+
+.bq-cell.is-last-from {
+    box-shadow: inset 0 0 0 1px rgba(245, 196, 81, 0.28);
+}
+
+/* ---------------- 暗棋背面 ---------------- */
+.bq-back {
+    position: relative;
+    width: 84%;
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.1), transparent 38%),
+        linear-gradient(160deg, #2b3852, #121a28 72%);
+    border: 1px solid rgba(245, 196, 81, 0.26);
+    box-shadow:
+        0 4px 10px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.09),
+        inset 0 -4px 10px rgba(0, 0, 0, 0.35);
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.bq-back__pattern {
+    position: absolute;
+    inset: 17%;
+    border: 1px solid rgba(245, 196, 81, 0.22);
+    border-radius: 3px;
+    transform: rotate(45deg);
+}
+
+.bq-back__seal {
+    position: relative;
+    z-index: 1;
+    font-family: 'Noto Serif SC', 'Songti SC', 'STKaiti', 'KaiTi', serif;
+    font-size: calc(var(--board) * 0.026);
+    font-weight: 900;
+    line-height: 1;
+    color: rgba(245, 196, 81, 0.36);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.bq-cell:not(:disabled):hover .bq-back {
+    transform: translateY(-2px);
+    border-color: rgba(245, 196, 81, 0.7);
+    box-shadow:
+        0 8px 16px rgba(0, 0, 0, 0.6),
+        0 0 16px rgba(245, 196, 81, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+/* ---------------- 明子 ---------------- */
+.bq-piece {
+    position: relative;
+    z-index: 2;
+    width: 84%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-family: 'Noto Serif SC', 'Songti SC', 'STKaiti', 'KaiTi', serif;
+    font-size: calc(var(--board) * 0.05);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: 0;
+    background: radial-gradient(circle at 32% 26%, #fffdf6, #f1e6cb 58%, #d6c6a3);
+    border: 1px solid rgba(120, 90, 40, 0.35);
+    box-shadow:
+        0 5px 12px rgba(0, 0, 0, 0.55),
+        inset 0 -3px 6px rgba(120, 90, 40, 0.16),
+        inset 0 2px 1px rgba(255, 255, 255, 0.92);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    animation: bq-pop 0.22s ease;
+}
+
+.bq-piece.is-red {
+    color: #c81e1e;
+    box-shadow:
+        0 5px 12px rgba(0, 0, 0, 0.55),
+        0 0 0 2px rgba(239, 68, 68, 0.2),
+        inset 0 -3px 6px rgba(120, 90, 40, 0.16),
+        inset 0 2px 1px rgba(255, 255, 255, 0.92);
+}
+
+.bq-piece.is-black {
+    color: #17233a;
+    box-shadow:
+        0 5px 12px rgba(0, 0, 0, 0.55),
+        0 0 0 2px rgba(30, 41, 59, 0.4),
+        inset 0 -3px 6px rgba(120, 90, 40, 0.16),
+        inset 0 2px 1px rgba(255, 255, 255, 0.92);
+}
+
+.bq-piece.is-king {
+    box-shadow:
+        0 5px 12px rgba(0, 0, 0, 0.55),
+        0 0 0 2px rgba(245, 196, 81, 0.85),
+        0 0 18px rgba(245, 196, 81, 0.4),
+        inset 0 -3px 6px rgba(120, 90, 40, 0.16),
+        inset 0 2px 1px rgba(255, 255, 255, 0.92);
+}
+
+.bq-piece.is-selected {
+    transform: scale(1.1);
+    z-index: 5;
+    animation: bq-selected 1.25s ease-in-out infinite;
+}
+
+.bq-piece.is-revealing {
+    animation: bq-reveal 0.36s cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+
+/* ---------------- 上一步 ---------------- */
+.bq-last-ring {
+    position: absolute;
+    inset: 4%;
+    border-radius: 50%;
+    border: 2px solid rgba(245, 196, 81, 0.8);
+    box-shadow: 0 0 12px rgba(245, 196, 81, 0.4);
+    pointer-events: none;
+    z-index: 4;
+}
+
+/* ---------------- 行动提示 ---------------- */
+.bq-dot {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 22%;
+    height: 22%;
+    margin: -11% 0 0 -11%;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.78);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.45);
+    pointer-events: none;
+    z-index: 3;
+    animation: bq-breathe 1.5s ease-in-out infinite;
+}
+
+.bq-capture-ring {
+    position: absolute;
+    inset: 3%;
+    border-radius: 50%;
+    border: 2px dashed #f87171;
+    box-shadow: 0 0 14px rgba(248, 113, 113, 0.55);
+    pointer-events: none;
+    z-index: 5;
+    animation: bq-capture 0.95s ease-in-out infinite;
+}
+
+.bq-hint {
+    position: absolute;
+    inset: 2%;
+    border-radius: 12px;
+    border: 2px dashed rgba(245, 196, 81, 0.95);
+    box-shadow:
+        0 0 18px rgba(245, 196, 81, 0.42),
+        inset 0 0 14px rgba(245, 196, 81, 0.12);
+    pointer-events: none;
+    z-index: 6;
+    animation: bq-hint 1.2s ease-in-out infinite;
+}
+
+/* ---------------- 动画 ---------------- */
+@keyframes bq-pop {
+    from {
+        opacity: 0;
+        transform: scale(0.86);
+    }
+}
+
+@keyframes bq-reveal {
+    from {
+        opacity: 0;
+        transform: rotateY(88deg) scale(0.82);
+    }
+    60% {
+        transform: rotateY(0) scale(1.04);
+    }
+}
+
+@keyframes bq-selected {
+    50% {
+        box-shadow:
+            0 0 0 5px rgba(245, 196, 81, 0.24),
+            0 0 26px rgba(245, 196, 81, 0.75),
+            0 8px 18px rgba(0, 0, 0, 0.6),
+            inset 0 -3px 6px rgba(120, 90, 40, 0.16);
+    }
+}
+
+@keyframes bq-breathe {
+    0%,
+    100% {
+        opacity: 0.4;
+        transform: scale(0.82);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes bq-capture {
+    0%,
+    100% {
+        opacity: 0.42;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+@keyframes bq-hint {
+    0%,
+    100% {
+        opacity: 0.5;
+        transform: scale(0.97);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.02);
+    }
+}
+
+@media (max-width: 520px) {
+    .bq-board {
+        grid-template-columns: 14px minmax(0, 1fr) 14px;
+        grid-template-rows: 14px auto 14px;
+        gap: 3px 4px;
+        width: min(calc(var(--board) + 32px), 100%);
+    }
+
+    .bq-board__cols,
+    .bq-board__ranks {
+        font-size: 0.62rem;
+    }
+
+    .bq-board__grid {
+        gap: 3px;
+        padding: 5px;
+        border-radius: 14px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bq-back,
+    .bq-piece,
+    .bq-piece.is-selected,
+    .bq-piece.is-revealing,
+    .bq-dot,
+    .bq-capture-ring,
+    .bq-hint {
+        animation: none;
+    }
+}

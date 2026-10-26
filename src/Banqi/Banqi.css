@@ -1,0 +1,231 @@
+/* ============================================================
+   暗棋页面
+   ============================================================ */
+
+.bq-page {
+    min-height: 100vh;
+    --board: min(640px, calc(100vw - 512px));
+}
+
+.bq-page .gp-turnbar,
+.bq-page .gp-boardstats {
+    width: 100%;
+    max-width: min(calc(var(--board) + 48px), 100%);
+}
+
+.bq-page .gp-stage__hint {
+    max-width: calc(var(--board) + 84px);
+}
+
+.bq-page .gp-turnbar {
+    overflow: hidden;
+}
+
+.bq-page .gp-turnbar__text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 尚未翻棋定色时使用金色光点 */
+.bq-page .gp-turnbar__dot[data-player='none'] {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.75);
+}
+
+/* ---------------- 明子进度条 ---------------- */
+.bq-bar__seg {
+    display: block;
+    height: 100%;
+    transition: width 0.32s ease;
+}
+
+.bq-bar__seg--red {
+    background: linear-gradient(90deg, #f87171, #dc2626);
+}
+
+.bq-bar__seg--black {
+    background: linear-gradient(90deg, #64748b, #0f172a);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+/* ---------------- 对局双方 ---------------- */
+.bq-players {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.bq-player {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 10px 12px;
+    border-radius: var(--r-md, 12px);
+    background: rgba(255, 255, 255, 0.028);
+    border: 1px solid var(--stroke-1);
+    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bq-player.is-active {
+    background: rgba(245, 196, 81, 0.055);
+    border-color: rgba(245, 196, 81, 0.42);
+    box-shadow:
+        0 0 0 1px rgba(245, 196, 81, 0.14),
+        0 0 22px rgba(245, 196, 81, 0.08);
+}
+
+.bq-side-mark {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-family: 'Noto Serif SC', 'Songti SC', 'STKaiti', 'KaiTi', serif;
+    font-size: 0.82rem;
+    font-weight: 900;
+    line-height: 1;
+    background: radial-gradient(circle at 32% 26%, #fffdf6, #f1e6cb 58%, #d6c6a3);
+    border: 1px solid rgba(120, 90, 40, 0.35);
+    box-shadow:
+        0 3px 8px rgba(0, 0, 0, 0.45),
+        inset 0 2px 1px rgba(255, 255, 255, 0.9);
+}
+
+.bq-side-mark.is-red {
+    color: #c81e1e;
+    box-shadow:
+        0 0 0 2px rgba(239, 68, 68, 0.24),
+        0 3px 8px rgba(0, 0, 0, 0.45),
+        inset 0 2px 1px rgba(255, 255, 255, 0.9);
+}
+
+.bq-side-mark.is-black {
+    color: #17233a;
+    box-shadow:
+        0 0 0 2px rgba(100, 116, 139, 0.45),
+        0 3px 8px rgba(0, 0, 0, 0.45),
+        inset 0 2px 1px rgba(255, 255, 255, 0.9);
+}
+
+.bq-side-mark.is-none {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px dashed rgba(148, 163, 184, 0.45);
+    color: var(--text-3);
+    box-shadow: none;
+    font-size: 0.9rem;
+}
+
+.bq-player__info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.bq-player__info .gp-name-input {
+    flex: none;
+    width: 100%;
+}
+
+.bq-player__sub {
+    font-size: 0.72rem;
+    line-height: 1.4;
+    color: var(--text-3);
+}
+
+.bq-player__count {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1px;
+    line-height: 1.1;
+}
+
+.bq-player__count strong {
+    font-size: 1.22rem;
+    font-weight: 800;
+    color: var(--text-1);
+    animation: bq-count-pop 0.3s ease;
+}
+
+.bq-player__count span {
+    font-size: 0.66rem;
+    color: var(--text-3);
+}
+
+@keyframes bq-count-pop {
+    from {
+        opacity: 0;
+        transform: translateY(4px) scale(0.9);
+    }
+}
+
+/* ---------------- 说明文字 ---------------- */
+.bq-note {
+    margin-top: 10px;
+    font-size: 0.79rem;
+    line-height: 1.65;
+    color: var(--text-3);
+}
+
+/* ---------------- 棋谱 ---------------- */
+.bq-log__label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.82rem;
+    color: var(--text-2);
+}
+
+.bq-log__tag {
+    flex-shrink: 0;
+    margin-left: auto;
+    padding: 2px 8px;
+    border-radius: var(--r-full);
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1.5;
+    white-space: nowrap;
+}
+
+.bq-log__tag.is-flip {
+    color: #c7d2fe;
+    background: rgba(99, 102, 241, 0.14);
+    border: 1px solid rgba(129, 140, 248, 0.32);
+}
+
+.bq-log__tag.is-capture {
+    color: #a5f3fc;
+    background: rgba(34, 211, 238, 0.12);
+    border: 1px solid rgba(34, 211, 238, 0.3);
+}
+
+/* ---------------- 响应式 ---------------- */
+@media (max-width: 1080px) {
+    .bq-page {
+        --board: min(640px, calc(100vw - 112px));
+    }
+}
+
+@media (max-width: 760px) {
+    .bq-page {
+        --board: min(640px, calc(100vw - 132px));
+    }
+
+    .bq-page .gp-stage__hint {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 520px) {
+    .bq-page {
+        --board: min(640px, calc(100vw - 112px));
+    }
+}

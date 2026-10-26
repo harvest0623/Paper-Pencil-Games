@@ -239,7 +239,7 @@ export const GAMES = [
         color: '#f87171',
         description: '棋子开局全部翻面，翻开才能行动。运气与算计交织，中国本土的经典翻棋玩法。',
         path: '/home/banqi',
-        playable: false,
+        playable: true,
         accent: 'red',
         meta: ['2 人', '10 分钟', '策略']
     },
