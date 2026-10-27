@@ -251,9 +251,9 @@ export const GAMES = [
         color: '#4ade80',
         description: '掷骰前进，踩到梯子直上、落到蛇头滑下，轻松随机的棋盘游戏，适合全家同乐。',
         path: '/home/snakes-and-ladders',
-        playable: false,
+        playable: true,
         accent: 'emerald',
-        meta: ['2–4 人', '10 分钟', '休闲']
+        meta: ['2 人', '10 分钟', '休闲']
     },
     {
         id: 'skyscrapers',

@@ -1,0 +1,332 @@
+/* ============================================================
+   蛇梯棋棋盘
+   --board 由页面传入，代表 10 × 10 棋盘的边长
+   ============================================================ */
+
+.snl-board {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr) 18px;
+    grid-template-rows: 18px auto 18px;
+    gap: 4px 6px;
+    width: min(calc(var(--board) + 48px), 100%);
+    margin: 0 auto;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------------- 坐标 ---------------- */
+.snl-board__cols,
+.snl-board__ranks {
+    display: grid;
+    color: var(--text-3);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+
+.snl-board__cols {
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+}
+
+.snl-board__ranks {
+    grid-template-rows: repeat(10, minmax(0, 1fr));
+}
+
+.snl-board__cols span,
+.snl-board__ranks span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.snl-board__cols--top {
+    grid-area: 1 / 2;
+    align-items: end;
+}
+
+.snl-board__cols--bottom {
+    grid-area: 3 / 2;
+    align-items: start;
+}
+
+.snl-board__ranks--left {
+    grid-area: 2 / 1;
+}
+
+.snl-board__ranks--right {
+    grid-area: 2 / 3;
+}
+
+/* ---------------- 棋盘 ---------------- */
+.snl-board__grid {
+    grid-area: 2 / 2;
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(74, 222, 128, 0.28);
+    background: #0a1016;
+    box-shadow:
+        0 0 0 7px rgba(74, 222, 128, 0.04),
+        0 0 0 8px rgba(255, 255, 255, 0.02),
+        0 26px 60px rgba(0, 0, 0, 0.58),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.snl-board__cells {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+    grid-template-rows: repeat(10, minmax(0, 1fr));
+}
+
+/* ---------------- 棋格 ---------------- */
+.snl-cell {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 4% 6%;
+    background: linear-gradient(160deg, #131c29, #0d141e);
+    box-shadow:
+        inset -1px -1px 0 rgba(255, 255, 255, 0.035),
+        inset 1px 1px 0 rgba(255, 255, 255, 0.015);
+    overflow: hidden;
+}
+
+.snl-cell.is-tint {
+    background: linear-gradient(160deg, #172232, #0f1825);
+}
+
+.snl-cell__no {
+    position: relative;
+    z-index: 1;
+    font-size: clamp(0.48rem, calc(var(--board) * 0.018), 0.72rem);
+    font-weight: 700;
+    line-height: 1.2;
+    color: rgba(226, 232, 240, 0.5);
+    letter-spacing: 0.01em;
+}
+
+/* 梯子起点 / 终点 */
+.snl-cell.is-ladder-start {
+    background: linear-gradient(160deg, rgba(245, 196, 81, 0.2), #101a26 72%);
+}
+
+.snl-cell.is-ladder-start .snl-cell__no {
+    color: #ffdf9a;
+}
+
+.snl-cell.is-ladder-end {
+    background: linear-gradient(160deg, rgba(245, 196, 81, 0.09), #101a26 76%);
+}
+
+/* 蛇头 / 蛇尾 */
+.snl-cell.is-snake-head {
+    background: linear-gradient(160deg, rgba(52, 211, 153, 0.2), #101a26 74%);
+}
+
+.snl-cell.is-snake-head .snl-cell__no {
+    color: #a7f3d0;
+}
+
+.snl-cell.is-snake-tail {
+    background: linear-gradient(160deg, rgba(52, 211, 153, 0.08), #101a26 76%);
+}
+
+/* 终点 */
+.snl-cell.is-finish {
+    background:
+        radial-gradient(circle at 70% 30%, rgba(255, 230, 166, 0.42), transparent 58%),
+        linear-gradient(160deg, rgba(245, 196, 81, 0.34), rgba(120, 53, 15, 0.4));
+    box-shadow: inset 0 0 0 1px rgba(245, 196, 81, 0.45);
+}
+
+.snl-cell.is-finish .snl-cell__no {
+    color: #ffe6a6;
+    font-weight: 800;
+}
+
+.snl-cell__flag {
+    position: absolute;
+    right: 5%;
+    bottom: 2%;
+    font-size: clamp(0.5rem, calc(var(--board) * 0.026), 1rem);
+    line-height: 1;
+    color: #ffe6a6;
+    text-shadow: 0 0 8px rgba(245, 196, 81, 0.75);
+    z-index: 1;
+}
+
+/* 提示 */
+.snl-cell.is-hint::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border: 2px dashed rgba(245, 196, 81, 0.95);
+    border-radius: 6px;
+    box-shadow:
+        0 0 14px rgba(245, 196, 81, 0.5),
+        inset 0 0 12px rgba(245, 196, 81, 0.14);
+    pointer-events: none;
+    z-index: 4;
+    animation: snl-hint 1.2s ease-in-out infinite;
+}
+
+/* ---------------- 梯子与蛇 ---------------- */
+.snl-board__links {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+    overflow: visible;
+}
+
+.snl-ladder line {
+    stroke: #eab308;
+    stroke-linecap: round;
+    opacity: 0.9;
+    filter: drop-shadow(0 0 1.1px rgba(245, 196, 81, 0.7));
+}
+
+.snl-snake path {
+    stroke: #34d399;
+    opacity: 0.92;
+    filter: drop-shadow(0 0 1.3px rgba(52, 211, 153, 0.55));
+}
+
+.snl-snake__shine {
+    stroke: rgba(209, 250, 229, 0.6);
+    opacity: 0.55;
+}
+
+.snl-snake__head {
+    fill: #0f766e;
+    stroke: #6ee7b7;
+    stroke-width: 0.3;
+    filter: drop-shadow(0 0 1.2px rgba(52, 211, 153, 0.6));
+}
+
+.snl-snake__eye {
+    fill: #ecfeff;
+}
+
+.snl-snake__tail {
+    fill: #6ee7b7;
+    opacity: 0.85;
+}
+
+/* ---------------- 棋子 ---------------- */
+.snl-token {
+    position: absolute;
+    width: 8%;
+    aspect-ratio: 1 / 1;
+    transform: translate(-50%, -50%);
+    transition:
+        left 0.16s linear,
+        top 0.16s linear;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.snl-token.is-jumping {
+    transition:
+        left 0.46s cubic-bezier(0.4, 0, 0.2, 1),
+        top 0.46s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.snl-token__chip {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    font-size: clamp(0.5rem, calc(var(--board) * 0.023), 0.88rem);
+    font-weight: 900;
+    line-height: 1;
+    color: #ffffff;
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    transform: translateX(var(--shift, 0%));
+    transition: transform 0.2s ease;
+}
+
+.snl-token__chip.is-blue {
+    background: radial-gradient(circle at 32% 26%, #93c5fd, #2563eb 72%);
+    box-shadow:
+        0 4px 10px rgba(0, 0, 0, 0.58),
+        0 0 12px rgba(59, 130, 246, 0.55),
+        inset 0 -2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.snl-token__chip.is-red {
+    background: radial-gradient(circle at 32% 26%, #fda4af, #dc2626 72%);
+    box-shadow:
+        0 4px 10px rgba(0, 0, 0, 0.58),
+        0 0 12px rgba(220, 38, 38, 0.55),
+        inset 0 -2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.snl-token__chip.is-active {
+    animation: snl-token-glow 1.5s ease-in-out infinite;
+}
+
+/* ---------------- 动画 ---------------- */
+@keyframes snl-token-glow {
+    0%,
+    100% {
+        box-shadow:
+            0 4px 10px rgba(0, 0, 0, 0.58),
+            0 0 0 2px rgba(245, 196, 81, 0.3),
+            0 0 10px rgba(245, 196, 81, 0.35);
+    }
+    50% {
+        box-shadow:
+            0 4px 10px rgba(0, 0, 0, 0.58),
+            0 0 0 3px rgba(245, 196, 81, 0.7),
+            0 0 20px rgba(245, 196, 81, 0.6);
+    }
+}
+
+@keyframes snl-hint {
+    0%,
+    100% {
+        opacity: 0.55;
+        transform: scale(0.97);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@media (max-width: 760px) {
+    .snl-board {
+        grid-template-columns: 14px minmax(0, 1fr) 14px;
+        grid-template-rows: 14px auto 14px;
+        gap: 3px 4px;
+        width: min(calc(var(--board) + 32px), 100%);
+    }
+
+    .snl-board__cols,
+    .snl-board__ranks {
+        font-size: 0.58rem;
+    }
+
+    .snl-board__grid {
+        border-radius: 12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .snl-token,
+    .snl-token.is-jumping,
+    .snl-token__chip.is-active,
+    .snl-cell.is-hint::after {
+        animation: none;
+        transition: none;
+    }
+}

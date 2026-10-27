@@ -1,0 +1,415 @@
+/* ============================================================
+   蛇梯棋页面
+   ============================================================ */
+
+.snl-page {
+    min-height: 100vh;
+    --board: min(600px, calc(100vw - 512px));
+}
+
+.snl-page .gp-turnbar,
+.snl-page .gp-boardstats {
+    width: 100%;
+    max-width: min(calc(var(--board) + 48px), 100%);
+}
+
+.snl-page .gp-stage__hint {
+    max-width: calc(var(--board) + 84px);
+}
+
+/* 窄屏下状态栏文字可收缩，避免溢出 */
+.snl-page .gp-turnbar {
+    overflow: hidden;
+}
+
+.snl-page .gp-turnbar__text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 终局时没有当前玩家，改用金色光点 */
+.snl-page .gp-turnbar__dot[data-player='none'] {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.75);
+}
+
+/* ---------------- 掷骰区 ---------------- */
+.snl-roll {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    max-width: min(calc(var(--board) + 48px), 100%);
+    padding: 14px 18px;
+    border-radius: var(--r-md);
+    background:
+        radial-gradient(120% 160% at 0% 0%, rgba(74, 222, 128, 0.12), transparent 62%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
+    border: 1px solid var(--stroke-1);
+}
+
+.snl-die {
+    flex-shrink: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 3px;
+    width: 56px;
+    height: 56px;
+    padding: 9px;
+    border-radius: 13px;
+    background: linear-gradient(155deg, #f8fafc, #cbd5e1);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.48),
+        inset 0 2px 2px rgba(255, 255, 255, 0.9),
+        inset 0 -3px 6px rgba(15, 23, 42, 0.18);
+}
+
+.snl-die.is-idle {
+    opacity: 0.55;
+}
+
+.snl-die.is-rolling {
+    animation: snl-die-roll 0.48s ease-in-out infinite;
+}
+
+.snl-pip {
+    place-self: center;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 34% 30%, #475569, #0f172a);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.28);
+}
+
+.snl-pip--tl {
+    grid-area: 1 / 1;
+}
+
+.snl-pip--tr {
+    grid-area: 1 / 3;
+}
+
+.snl-pip--ml {
+    grid-area: 2 / 1;
+}
+
+.snl-pip--c {
+    grid-area: 2 / 2;
+}
+
+.snl-pip--mr {
+    grid-area: 2 / 3;
+}
+
+.snl-pip--bl {
+    grid-area: 3 / 1;
+}
+
+.snl-pip--br {
+    grid-area: 3 / 3;
+}
+
+.snl-roll__main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.snl-roll__turn {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-3);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.snl-roll__btn {
+    padding: 10px 18px;
+    font-size: 0.92rem;
+    width: fit-content;
+    min-width: 124px;
+}
+
+.snl-roll__last {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+    min-width: 0;
+}
+
+.snl-roll__last span {
+    font-size: 0.72rem;
+    color: var(--text-3);
+}
+
+.snl-roll__last strong {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--gold);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 190px;
+}
+
+@keyframes snl-die-roll {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    25% {
+        transform: rotate(-14deg) scale(0.94);
+    }
+    50% {
+        transform: rotate(12deg) scale(1.05);
+    }
+    75% {
+        transform: rotate(-6deg) scale(0.97);
+    }
+    100% {
+        transform: rotate(0deg) scale(1);
+    }
+}
+
+/* ---------------- 对局双方 ---------------- */
+.snl-players {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.snl-player {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 10px 12px;
+    border-radius: var(--r-md);
+    background: rgba(255, 255, 255, 0.028);
+    border: 1px solid var(--stroke-1);
+    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.snl-player.is-active {
+    background: rgba(245, 196, 81, 0.055);
+    border-color: rgba(245, 196, 81, 0.42);
+    box-shadow:
+        0 0 0 1px rgba(245, 196, 81, 0.14),
+        0 0 22px rgba(245, 196, 81, 0.08);
+}
+
+.snl-player .gp-chip {
+    width: 22px;
+    height: 22px;
+}
+
+.snl-player__info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.snl-player__info .gp-name-input {
+    flex: none;
+    width: 100%;
+}
+
+.snl-player__sub {
+    font-size: 0.72rem;
+    line-height: 1.4;
+    color: var(--text-3);
+}
+
+.snl-player__pos {
+    flex-shrink: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+}
+
+.snl-player__pos strong {
+    font-size: 1.24rem;
+    font-weight: 800;
+    color: var(--text-1);
+    font-variant-numeric: tabular-nums;
+    animation: snl-pos-pop 0.32s ease;
+}
+
+.snl-player__pos span {
+    font-size: 0.68rem;
+    color: var(--text-3);
+}
+
+@keyframes snl-pos-pop {
+    from {
+        opacity: 0;
+        transform: translateY(4px) scale(0.9);
+    }
+}
+
+/* ---------------- 说明文字 ---------------- */
+.snl-note {
+    margin-top: 12px;
+    font-size: 0.79rem;
+    line-height: 1.65;
+    color: var(--text-3);
+}
+
+/* ---------------- 进度条 ---------------- */
+.snl-progress {
+    height: 8px;
+    border-radius: var(--r-full);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: inset 0 0 0 1px var(--stroke-1);
+    overflow: hidden;
+}
+
+.snl-progress + .snl-progress {
+    margin-top: 8px;
+}
+
+.snl-progress__fill {
+    display: block;
+    height: 100%;
+    border-radius: var(--r-full);
+    transition: width 0.5s cubic-bezier(0.34, 1.1, 0.64, 1);
+}
+
+.snl-progress__fill.is-blue {
+    background: linear-gradient(90deg, #60a5fa, #2563eb);
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.45);
+}
+
+.snl-progress__fill.is-red {
+    background: linear-gradient(90deg, #fda4af, #dc2626);
+    box-shadow: 0 0 12px rgba(220, 38, 38, 0.45);
+}
+
+/* ---------------- 棋谱 ---------------- */
+.snl-log__die {
+    flex-shrink: 0;
+    display: inline-grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--stroke-1);
+    font-size: 0.74rem;
+    font-weight: 800;
+    color: var(--text-1);
+    font-variant-numeric: tabular-nums;
+}
+
+.snl-log__label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-2);
+    letter-spacing: 0.02em;
+}
+
+.snl-log__tag {
+    flex-shrink: 0;
+    padding: 2px 8px;
+    border-radius: var(--r-full);
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1.5;
+    white-space: nowrap;
+}
+
+.snl-log__tag.is-ladder {
+    color: #ffdf9a;
+    background: rgba(245, 196, 81, 0.14);
+    border: 1px solid rgba(245, 196, 81, 0.34);
+}
+
+.snl-log__tag.is-snake {
+    color: #a7f3d0;
+    background: rgba(52, 211, 153, 0.14);
+    border: 1px solid rgba(52, 211, 153, 0.34);
+}
+
+.snl-log__tag.is-over {
+    color: #cbd5e1;
+    background: rgba(148, 163, 184, 0.14);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+/* ---------------- 响应式 ---------------- */
+@media (max-width: 1080px) {
+    .snl-page {
+        --board: min(560px, calc(100vw - 112px));
+    }
+}
+
+@media (max-width: 760px) {
+    .snl-page {
+        --board: min(560px, calc(100vw - 132px));
+    }
+
+    .snl-page .gp-stage__hint {
+        max-width: 100%;
+    }
+
+    .snl-roll {
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 12px 14px;
+    }
+
+    .snl-roll__last {
+        width: 100%;
+        align-items: flex-start;
+        flex-direction: row;
+        gap: 8px;
+    }
+
+    .snl-roll__last strong {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 520px) {
+    .snl-page {
+        --board: min(560px, calc(100vw - 112px));
+    }
+
+    .snl-die {
+        width: 48px;
+        height: 48px;
+        padding: 7px;
+        border-radius: 11px;
+    }
+
+    .snl-pip {
+        width: 7px;
+        height: 7px;
+    }
+
+    .snl-roll__btn {
+        min-width: 0;
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .snl-die.is-rolling,
+    .snl-player__pos strong {
+        animation: none;
+    }
+}
