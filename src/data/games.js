@@ -263,7 +263,7 @@ export const GAMES = [
         color: '#22d3ee',
         description: '在网格里填入不同高度的楼房，让四周的提示数字恰好等于能看到的楼栋数量。',
         path: '/home/skyscrapers',
-        playable: false,
+        playable: true,
         accent: 'cyan',
         meta: ['1 人', '10 分钟', '逻辑']
     },

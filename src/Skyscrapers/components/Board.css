@@ -1,0 +1,199 @@
+/* ============================================================
+   摩天楼棋盘
+   ============================================================ */
+
+.sk-board-wrap {
+    display: flex;
+    justify-content: center;
+    width: min(var(--board), 100%);
+}
+
+.sk-board {
+    --clue: 38px;
+    position: relative;
+    display: grid;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    user-select: none;
+}
+
+/* 中间网格底板 */
+.sk-board__bg {
+    border-radius: 16px;
+    background:
+        radial-gradient(130% 130% at 0% 0%, rgba(34, 211, 238, 0.14), transparent 62%),
+        radial-gradient(130% 130% at 100% 100%, rgba(124, 92, 255, 0.16), transparent 62%),
+        linear-gradient(158deg, #141a29 0%, #090c15 100%);
+    border: 2px solid rgba(148, 163, 184, 0.4);
+    box-shadow:
+        0 0 0 6px rgba(255, 255, 255, 0.035),
+        0 24px 58px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.sk-corner {
+    display: block;
+}
+
+/* ---------------- 边缘提示 ---------------- */
+.sk-clue {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    color: var(--gold);
+    font-size: clamp(0.62rem, calc(var(--board) * 0.024), 0.94rem);
+    font-weight: 800;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+    transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+.sk-clue.is-active {
+    color: #fff6dc;
+    text-shadow: 0 0 10px rgba(245, 196, 81, 0.75);
+}
+
+.sk-clue.is-hidden::after {
+    content: '';
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.16);
+}
+
+/* ---------------- 格子 ---------------- */
+.sk-cell {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: transparent;
+    display: grid;
+    place-items: center;
+    font-family: inherit;
+    color: inherit;
+    cursor: pointer;
+    transition: background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.sk-cell.is-last-col {
+    border-right: none;
+}
+
+.sk-cell.is-last-row {
+    border-bottom: none;
+}
+
+.sk-cell:hover {
+    background: rgba(34, 211, 238, 0.08);
+}
+
+.sk-cell.is-peer {
+    background: rgba(124, 92, 255, 0.11);
+}
+
+.sk-cell.is-same {
+    background: rgba(34, 211, 238, 0.16);
+}
+
+.sk-cell.is-selected {
+    background: rgba(124, 92, 255, 0.32);
+    box-shadow: inset 0 0 0 2px rgba(124, 92, 255, 0.85);
+}
+
+.sk-cell.is-wrong {
+    background: rgba(255, 107, 107, 0.16);
+    box-shadow: inset 0 0 0 1px rgba(255, 107, 107, 0.45);
+}
+
+.sk-cell:focus-visible {
+    outline: 2px solid var(--brand-2);
+    outline-offset: -2px;
+}
+
+/* ---------------- 楼层数字 ---------------- */
+.sk-value {
+    font-size: clamp(1.05rem, calc(var(--board) / var(--n) * 0.36), 2.2rem);
+    font-weight: 800;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: var(--brand-2);
+    text-shadow: 0 0 14px rgba(34, 211, 238, 0.38);
+    animation: sk-pop 0.26s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.sk-cell.is-wrong .sk-value {
+    color: #ff8a8a;
+    text-shadow: 0 0 14px rgba(255, 107, 107, 0.5);
+}
+
+@keyframes sk-pop {
+    0% {
+        transform: scale(0.4);
+        opacity: 0;
+    }
+    60% {
+        transform: scale(1.14);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* ---------------- 引擎提示 ---------------- */
+.sk-hint-ring {
+    position: absolute;
+    inset: 9%;
+    border-radius: 9px;
+    border: 2px dashed rgba(245, 196, 81, 0.95);
+    box-shadow: 0 0 16px rgba(245, 196, 81, 0.5);
+    animation: sk-ring 1.3s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 2;
+}
+
+@keyframes sk-ring {
+    0%,
+    100% {
+        transform: scale(0.94);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.02);
+        opacity: 1;
+    }
+}
+
+/* ---------------- 响应式 ---------------- */
+@media (max-width: 760px) {
+    .sk-board {
+        --clue: 26px;
+    }
+
+    .sk-board__bg {
+        border-radius: 12px;
+    }
+}
+
+@media (max-width: 520px) {
+    .sk-board {
+        --clue: 22px;
+    }
+
+    .sk-value {
+        font-size: clamp(0.95rem, calc(var(--board) / var(--n) * 0.4), 1.9rem);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sk-value,
+    .sk-hint-ring {
+        animation: none;
+    }
+}
