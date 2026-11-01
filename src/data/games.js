@@ -275,7 +275,7 @@ export const GAMES = [
         color: '#2dd4bf',
         description: '在岛屿之间架桥，让每座岛连接的桥数与数字一致，并且所有岛屿连成一片。',
         path: '/home/hashiwokakero',
-        playable: false,
+        playable: true,
         accent: 'teal',
         meta: ['1 人', '10 分钟', '逻辑']
     },
