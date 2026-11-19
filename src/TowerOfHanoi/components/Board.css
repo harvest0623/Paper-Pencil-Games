@@ -1,0 +1,386 @@
+/* ============================================================
+   汉诺塔棋盘
+   ============================================================ */
+
+.hanoi-board-wrap {
+    display: flex;
+    justify-content: center;
+    width: min(var(--board), 100%);
+}
+
+.hanoi-board {
+    position: relative;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    padding: 18px 12px 10px;
+    min-height: calc(var(--peg-h) + 36px);
+    border-radius: 18px;
+    background:
+        radial-gradient(120% 120% at 0% 0%, rgba(124, 92, 255, 0.16), transparent 58%),
+        radial-gradient(120% 120% at 100% 100%, rgba(34, 211, 238, 0.1), transparent 58%),
+        linear-gradient(158deg, #131a28 0%, #080b14 100%);
+    border: 1px solid rgba(148, 163, 184, 0.36);
+    box-shadow:
+        0 0 0 6px rgba(255, 255, 255, 0.03),
+        0 24px 58px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+    user-select: none;
+    touch-action: manipulation;
+    --peg-h: clamp(250px, calc(var(--board) * 0.66), 372px);
+    --disk-h: clamp(15px, calc(var(--peg-h) / 15), 24px);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hanoi-board__glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        64% 60% at 50% 62%,
+        rgba(124, 92, 255, 0.08),
+        transparent 72%
+    );
+    pointer-events: none;
+}
+
+.hanoi-board.is-done {
+    border-color: rgba(245, 196, 81, 0.45);
+    box-shadow:
+        0 0 0 6px rgba(245, 196, 81, 0.06),
+        0 24px 58px rgba(0, 0, 0, 0.5),
+        0 0 60px rgba(245, 196, 81, 0.22);
+}
+
+/* ---------------- 柱子 ---------------- */
+.hanoi-peg {
+    position: relative;
+    height: var(--peg-h);
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 14px;
+    background: transparent;
+    color: inherit;
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.hanoi-peg:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+.hanoi-peg:focus-visible {
+    outline: 2px solid var(--brand-2);
+    outline-offset: 2px;
+}
+
+.hanoi-peg:disabled {
+    cursor: default;
+}
+
+.hanoi-peg.is-selected {
+    border-color: rgba(167, 139, 250, 0.75);
+    background: rgba(124, 92, 255, 0.09);
+    box-shadow: inset 0 0 0 1px rgba(124, 92, 255, 0.2);
+}
+
+.hanoi-peg__rod {
+    position: absolute;
+    left: 50%;
+    bottom: 14px;
+    width: 8px;
+    height: calc(100% - 68px);
+    transform: translateX(-50%);
+    border-radius: var(--r-full);
+    background: linear-gradient(
+        180deg,
+        rgba(196, 181, 253, 0.9) 0%,
+        rgba(124, 92, 255, 0.45) 42%,
+        rgba(148, 163, 184, 0.18) 100%
+    );
+    box-shadow:
+        0 0 14px rgba(124, 92, 255, 0.24),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    z-index: 1;
+}
+
+.hanoi-peg__rod::before {
+    content: '';
+    position: absolute;
+    top: -7px;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    background: linear-gradient(180deg, #ddd6fe, #7c5cff);
+    box-shadow: 0 0 12px rgba(124, 92, 255, 0.5);
+}
+
+.hanoi-peg.is-selected .hanoi-peg__rod {
+    background: linear-gradient(
+        180deg,
+        #ffe9ad 0%,
+        rgba(245, 196, 81, 0.6) 42%,
+        rgba(148, 163, 184, 0.22) 100%
+    );
+    box-shadow: 0 0 16px rgba(245, 196, 81, 0.35);
+}
+
+.hanoi-peg__base {
+    position: absolute;
+    left: 7%;
+    bottom: 7px;
+    width: 86%;
+    height: 13px;
+    border-radius: var(--r-full);
+    background: linear-gradient(
+        180deg,
+        rgba(148, 163, 184, 0.42),
+        rgba(30, 41, 59, 0.9)
+    );
+    box-shadow:
+        0 8px 18px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    z-index: 2;
+}
+
+.hanoi-peg.is-recent .hanoi-peg__base {
+    box-shadow:
+        0 8px 18px rgba(0, 0, 0, 0.45),
+        0 0 16px rgba(34, 211, 238, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+
+/* ---------------- 柱头标签 ---------------- */
+.hanoi-peg__head {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    z-index: 4;
+    pointer-events: none;
+}
+
+.hanoi-peg__name {
+    display: grid;
+    place-items: center;
+    width: 23px;
+    height: 23px;
+    border-radius: 8px;
+    font-size: 0.74rem;
+    font-weight: 800;
+    color: var(--text-2);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--stroke-1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.hanoi-peg.is-selected .hanoi-peg__name {
+    color: #ffe9ad;
+    border-color: rgba(245, 196, 81, 0.45);
+    background: rgba(245, 196, 81, 0.14);
+}
+
+.hanoi-peg__goal {
+    padding: 1px 7px;
+    border-radius: var(--r-full);
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: #ffe9ad;
+    background: rgba(245, 196, 81, 0.12);
+    border: 1px solid rgba(245, 196, 81, 0.3);
+}
+
+.hanoi-peg__hint-tag {
+    padding: 1px 7px;
+    border-radius: var(--r-full);
+    font-size: 0.58rem;
+    font-weight: 800;
+    color: #ffe9ad;
+    background: rgba(245, 196, 81, 0.2);
+    border: 1px solid rgba(245, 196, 81, 0.5);
+    animation: hanoi-hint-tag 1.25s ease-in-out infinite;
+}
+
+.hanoi-peg__hint-tag.is-target {
+    color: #fff5d6;
+    background: rgba(245, 196, 81, 0.42);
+    border-color: rgba(245, 196, 81, 0.85);
+}
+
+/* ---------------- 圆盘堆叠 ---------------- */
+.hanoi-peg__stack {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    top: 66px;
+    bottom: 17px;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 2px;
+    z-index: 3;
+}
+
+.hanoi-disk {
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: var(--disk-h);
+    max-width: 100%;
+    border-radius: var(--r-full);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    color: #fff;
+    font-size: 0.6rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    box-shadow:
+        0 6px 14px rgba(0, 0, 0, 0.42),
+        inset 0 1px 0 rgba(255, 255, 255, 0.42);
+    transition: transform 0.2s cubic-bezier(0.34, 1.2, 0.64, 1), filter 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.hanoi-disk::before {
+    content: '';
+    position: absolute;
+    inset: 2px 14% auto 14%;
+    height: 38%;
+    border-radius: var(--r-full);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), transparent);
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+.hanoi-disk__num {
+    position: relative;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+}
+
+.hanoi-disk[data-size='1'] {
+    background: linear-gradient(180deg, #fbcfe8, #ec4899 58%, #be185d);
+}
+
+.hanoi-disk[data-size='2'] {
+    background: linear-gradient(180deg, #fde68a, #f59e0b 58%, #b45309);
+}
+
+.hanoi-disk[data-size='3'] {
+    background: linear-gradient(180deg, #a7f3d0, #10b981 58%, #047857);
+}
+
+.hanoi-disk[data-size='4'] {
+    background: linear-gradient(180deg, #a5f3fc, #06b6d4 58%, #0e7490);
+}
+
+.hanoi-disk[data-size='5'] {
+    background: linear-gradient(180deg, #ddd6fe, #8b5cf6 58%, #6d28d9);
+}
+
+.hanoi-disk.is-lifted {
+    transform: translateY(-10px) scale(1.03);
+    filter: brightness(1.18);
+    box-shadow:
+        0 0 0 2px rgba(245, 196, 81, 0.5),
+        0 12px 24px rgba(0, 0, 0, 0.5);
+}
+
+.hanoi-disk.is-last {
+    animation: hanoi-disk-pop 0.45s cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+
+/* ---------------- 提示高亮 ---------------- */
+.hanoi-peg__ring {
+    position: absolute;
+    inset: 2px;
+    border: 2px dashed rgba(245, 196, 81, 0.95);
+    border-radius: 14px;
+    box-shadow: 0 0 20px rgba(245, 196, 81, 0.42) inset;
+    animation: hanoi-ring-pulse 1.25s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.hanoi-peg.is-hint-to .hanoi-peg__ring {
+    border-style: solid;
+    box-shadow:
+        0 0 0 2px rgba(245, 196, 81, 0.18),
+        0 0 24px rgba(245, 196, 81, 0.5) inset;
+}
+
+@keyframes hanoi-disk-pop {
+    0% {
+        transform: scale(0.94) translateY(-8px);
+        filter: brightness(1.5);
+    }
+    100% {
+        transform: scale(1) translateY(0);
+        filter: brightness(1);
+    }
+}
+
+@keyframes hanoi-ring-pulse {
+    0%,
+    100% {
+        opacity: 0.62;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+@keyframes hanoi-hint-tag {
+    0%,
+    100% {
+        opacity: 0.72;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* ---------------- 响应式 ---------------- */
+@media (max-width: 760px) {
+    .hanoi-board {
+        padding: 14px 8px 8px;
+        border-radius: 14px;
+        --peg-h: clamp(230px, calc(var(--board) * 0.68), 340px);
+    }
+
+    .hanoi-peg {
+        border-radius: 12px;
+    }
+
+    .hanoi-peg__stack {
+        left: 5px;
+        right: 5px;
+    }
+
+    .hanoi-peg__ring {
+        border-radius: 12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hanoi-peg__hint-tag,
+    .hanoi-peg__ring,
+    .hanoi-disk.is-last {
+        animation: none;
+    }
+
+    .hanoi-disk {
+        transition: none;
+    }
+}

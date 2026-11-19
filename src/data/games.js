@@ -287,7 +287,7 @@ export const GAMES = [
         color: '#a78bfa',
         description: '每次只能移动一个圆盘、大盘不可压小盘，用最少步数把整座塔搬到另一根柱子上。',
         path: '/home/tower-of-hanoi',
-        playable: false,
+        playable: true,
         accent: 'violet',
         meta: ['1 人', '5 分钟', '逻辑']
     },
